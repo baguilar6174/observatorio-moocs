@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  characters: {
+  document: {
     spreadsheetId: '1hfC-QTTyZvroe1vJvEkzQHJDFsOVC4H_x-qyx-Evm-M',
     worksheetId: 1,
   },

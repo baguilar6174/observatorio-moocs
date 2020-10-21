@@ -2,8 +2,8 @@
 </router-outlet>
 <section class="container">
     <div class="row">
-        <div class="col-4" *ngFor="let indicator of indicators">
-            <div class="card text-center" (click)="onClick(indicator)">
+        <div class="col-4" *ngFor="let indicator of cards">
+            <div class="card text-center" (click)="generateCoursesCountGraph(indicator.type)">
                 <div class="card-body">
                     <h5 class="card-title">{{indicator.type}}</h5>
                     <p class="card-text">{{indicator.value}}</p>
