@@ -1,70 +1,21 @@
 <router-outlet>
 </router-outlet>
-<highcharts-chart [Highcharts]="Highcharts" [options]="chartOptions" style="width: 100%; height: 400px; display: block;"></highcharts-chart>
-<!-- <section class="example">
-    <div class="container">
-        <h3>Example</h3>
-        <div *ngIf="characters$ | async as characters; else loading">
-            <div *ngFor="let character of characters" class="character-card">
-                <div class="name">
-                    {{ character.name }}
-                </div>
-                <div class="row">
-                    <div class="column">
-                        <table class="email-contact">
-                            <tr>
-                                <td>
-                                    <svg style="width:14px;height:14px" viewBox="0 0 24 24">
-                    <path fill="currentColor"
-                      d="M22 6C22 4.9 21.1 4 20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6M20 6L12 11L4 6H20M20 18H4V8L12 13L20 8V18Z" />
-                  </svg>
-                                </td>
-                                <td class="email">
-                                    {{ character.email || '-' }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <svg style="width:14px;height:14px" viewBox="0 0 24 24">
-                    <path fill="currentColor"
-                      d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z" />
-                  </svg>
-                                </td>
-                                <td>
-                                    {{ character.contact.street }} {{ character.contact.streetNumber }}<br> {{ character.contact.zip }} {{ character.contact.city }}
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="column">
-                        <div class="skills">
-                            <span>Skills</span>
-                            <ul>
-                                <li *ngFor="let skill of character.skills">{{ skill }}</li>
-                                <li *ngIf="character.skills.length == 0" class="no-skills">no skills</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <ng-template #loading>
-            <div class="loading">
-                <div class="lds-ripple">
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
-        </ng-template>
-    </div>
-</section> -->
 <section class="container">
     <div class="row">
-        <div class="col-6">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum quaerat dolore molestiae a corporis, ab rerum sed, impedit ullam veritatis id laborum similique quo quia?
+        <div class="col-4" *ngFor="let indicator of indicators">
+            <div class="card text-center" (click)="onClick(indicator)">
+                <div class="card-body">
+                    <h5 class="card-title">{{indicator.type}}</h5>
+                    <p class="card-text">{{indicator.value}}</p>
+                </div>
+            </div>
         </div>
-        <div class="col-6">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Praesentium aliquam harum illum dolor odio voluptas quo nam, dolores laboriosam quibusdam minima temporibus excepturi nobis inventore!
+    </div>
+</section>
+<section class="container">
+    <div class="row">
+        <div class="col-12">
+            <highcharts-chart [(update)]="updateFlag" [Highcharts]="Highcharts" [options]="chartOptions" style="width: 100%; height: 400px; display: block;"></highcharts-chart>
         </div>
     </div>
 </section>
