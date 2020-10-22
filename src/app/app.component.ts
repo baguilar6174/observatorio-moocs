@@ -24,172 +24,51 @@ export class AppComponent implements OnInit {
   updateFlag = false;
   //Actualización en gráfico de Recuento MOOC/SPOOC por universidad
   updateFlag2 = false;
-
-  // COntenedores para TreeMap
-  @ViewChild("containerDomain", { read: ElementRef }) container1: ElementRef;
-  @ViewChild("containerDurationWeeks", { read: ElementRef }) container2: ElementRef;
-  @ViewChild("containerDurationHours", { read: ElementRef }) container3: ElementRef;
+  //Actualización en gráfico de TreeMap Dominio
+  updateFlag3 = false;
+  //Actualización en gráfico de TreeMap DurationWeek
+  updateFlag4 = false;
+  //Actualización en gráfico de TreeMap DurationHours
+  updateFlag5 = false;
 
   //Variable spara almacenar datos
   data = [];
   cards = [];
   courses = [];
   categories = [];
+  domains = [];
+  durations = [];
+  dedications = [];
 
   constructor(private ds: DataService) { }
 
   ngOnInit(): void {
     this.ds.getData().subscribe((data: Record[]) => {
       this.data = data;
+      let indicator: string = 'MOOC';
       this.generateCards();
-      this.generateCoursesCountGraph('MOOC', 0);
+      this.generateCoursesCountGraph(indicator);
+      this.generateDomainCoursesCountGraph(indicator);
+      this.generateDurationCoursesCountGraph(indicator);
+      this.generateDedicationCoursesCountGraph(indicator);
     });
   }
 
-  ngAfterViewInit() {
-    // Tree Map Domain
-    Highcharts.chart(this.container1.nativeElement, {
-      chart: {
-        style: {
-          fontFamily: 'Poppins'
-        }
-      },
-      colorAxis: {
-        minColor: '#4179AB',
-        maxColor: '#fff',
-      },
-      series: [{
-        type: 'treemap',
-        data: [{
-          name: 'Ciencias aplicadas',
-          value: 6,
-          colorValue: 1
-        }, {
-          name: 'Estudios Sociales',
-          value: 6,
-          colorValue: 2
-        }, {
-          name: 'Matematicas',
-          value: 4,
-          colorValue: 3
-        }, {
-          name: 'lenguaje y literatura',
-          value: 3,
-          colorValue: 4
-        }, {
-          name: 'E',
-          value: 2,
-          colorValue: 5
-        }, {
-          name: 'F',
-          value: 2,
-          colorValue: 6
-        }, {
-          name: 'Gastronomia',
-          value: 1,
-          colorValue: 7
-        }]
-      }],
-      title: {
-        text: 'Dominios'
+  updateGraphs(indicator: string, index: number) {
+    
+    //Control de card activada y desactivada
+    for (var _i = 0; _i < this.cards.length; _i++) {
+      if(index === _i){
+        this.cards[_i].select = true;
+      }else{
+        this.cards[_i].select = false;
       }
-    });
+    }
 
-    // Tree Map DurationWeeks
-    Highcharts.chart(this.container2.nativeElement, {
-      chart: {
-        style: {
-          fontFamily: 'Poppins'
-        }
-      },
-      colorAxis: {
-        minColor: '#007E33',
-        maxColor: '#fff',
-      },
-      series: [{
-        type: 'treemap',
-        data: [{
-          name: 'A',
-          value: 6,
-          colorValue: 1
-        }, {
-          name: 'B',
-          value: 6,
-          colorValue: 2
-        }, {
-          name: 'C',
-          value: 4,
-          colorValue: 3
-        }, {
-          name: 'D',
-          value: 3,
-          colorValue: 4
-        }, {
-          name: 'E',
-          value: 2,
-          colorValue: 5
-        }, {
-          name: 'F',
-          value: 2,
-          colorValue: 6
-        }, {
-          name: 'G',
-          value: 1,
-          colorValue: 7
-        }]
-      }],
-      title: {
-        text: 'Duración en semanas'
-      }
-    });
-
-    // Tree Map DurationHours
-    Highcharts.chart(this.container3.nativeElement, {
-      chart: {
-        style: {
-          fontFamily: 'Poppins'
-        }
-      },
-      colorAxis: {
-        minColor: '#0d47a1',
-        maxColor: '#fff',
-      },
-      series: [{
-        type: 'treemap',
-        data: [{
-          name: 'A',
-          value: 6,
-          colorValue: 1
-        }, {
-          name: 'B',
-          value: 6,
-          colorValue: 2
-        }, {
-          name: 'C',
-          value: 4,
-          colorValue: 3
-        }, {
-          name: 'D',
-          value: 3,
-          colorValue: 4
-        }, {
-          name: 'E',
-          value: 2,
-          colorValue: 5
-        }, {
-          name: 'F',
-          value: 2,
-          colorValue: 6
-        }, {
-          name: 'G',
-          value: 1,
-          colorValue: 7
-        }]
-      }],
-      title: {
-        text: 'Duración en horas'
-      }
-    });
+    this.generateCoursesCountGraph(indicator);
+    this.generateDomainCoursesCountGraph(indicator);
+    this.generateDurationCoursesCountGraph(indicator);
+    this.generateDedicationCoursesCountGraph(indicator);
   }
 
   generateCards() {
@@ -209,7 +88,8 @@ export class AppComponent implements OnInit {
     }
   }
 
-  generateCoursesCountGraph(indicator: string, index: number) {
+  generateCoursesCountGraph(indicator: string) {
+    // generate data
     this.courses = [];
     this.categories = [];
     let item, arr = [];
@@ -225,6 +105,7 @@ export class AppComponent implements OnInit {
       this.categories.push(item.name);
     }
 
+    // Graph update
     this.chartOptions.series[0] = {
       type: 'bar',
       data: this.courses
@@ -234,7 +115,6 @@ export class AppComponent implements OnInit {
     this.updateFlag2 = true;
 
     /**----------------------------------- */
-
     this.chartOptions2.series[0] = {
       type: 'bar',
       data: this.courses
@@ -242,19 +122,114 @@ export class AppComponent implements OnInit {
     this.chartOptions2.xAxis = { categories: this.categories };
     this.chartOptions2.title = { text: `Número de MOOC/SPOOC ${indicator} por universidad` };
     this.updateFlag = true;
-
-    //Control de card activada y desactivada
-
-    for (var _i = 0; _i < this.cards.length; _i++) {
-      if(index === _i){
-        this.cards[_i].select = true;
-      }else{
-        this.cards[_i].select = false;
-      }
-    }
   }
 
-  getCount(arr) {
+  generateDomainCoursesCountGraph (indicator: string) {
+    // generate data
+    this.domains = [];
+    let item, arr = [];
+    for (item of this.data) {
+      (item.mooc_spooc===indicator) && arr.push(item.dominio_aprendizaje);
+    }
+    let counts = this.getCount(arr);
+    for (const property in counts) {
+      this.domains.push({ name: property, value: counts[property], colorValue: 1 });
+    }
+    this.domains.sort(this.compareWithValueField);
+    let i :number = 1;
+    for (item of this.domains) {
+      item.colorValue=i++;
+    }
+
+    // update graph
+    this.chartOptions3.series[0] = {
+      type: 'treemap',
+      data: this.domains
+    }
+    this.updateFlag3 = true;
+  }
+
+  generateDurationCoursesCountGraph (indicator: string) {
+    // generate data
+    this.durations = [];
+    let item, label, a, b, arr = [];
+    for (item of this.data) {
+      if (item.mooc_spooc===indicator) {
+        a = item.duracion_semanas.split('/');
+        if(a[0].includes("semana")) {
+          b = a[0].split(' ');
+          label = (b[0]==='1') ? (b[0]+' semana') : (b[0]+' semanas');
+        } else {
+          label = a[0];
+        }
+        arr.push(label);
+      }
+    }
+    let counts = this.getCount(arr);
+    for (const property in counts) {
+      this.durations.push({ name: property, value: counts[property], colorValue: 1 });
+    }
+    this.durations.sort(this.compareWithValueField);
+    let i :number = 1;
+    for (item of this.durations) {
+      item.colorValue=i++;
+    }
+
+    // update graph
+    this.chartOptions4.series[0] = {
+      type: 'treemap',
+      data: this.durations
+    }
+    this.updateFlag4 = true;
+  }
+
+  generateDedicationCoursesCountGraph (indicator: string) {
+    // generate data 
+    this.dedications = [];
+    let item, label, a, b, arr = [];
+    for (item of this.data) {
+      if (item.mooc_spooc===indicator) {
+        a = item.dedicacion_horas_semanas.split('/');
+        if(a[0].includes("hora")) {
+          b = a[0].split(' ');
+          if (Number(b[0].trim())) {
+            label = {institution: item.institucion, dedication: Number(b[0].trim())};
+            arr.push(label);
+          }
+        } 
+      }
+    }
+
+    arr.sort(this.compareWithInstitutionField);
+    let institution= (arr[0]) ? arr[0].institution: '';
+    let sum: number = 0, cont: number = 0, counts = [];
+    for (item of arr) {
+      if (item.institution===institution) {
+        sum += Number(item.dedication);
+        cont++;
+      } else {
+        counts.push({name: institution, value: (Math.round((sum/cont)*100)/100), colorValue: 1});
+        institution = item.institution;
+        sum = Number(item.dedication);
+        cont = 1;
+      }
+    }
+    counts.push({name: item.institution, value: (sum/cont), colorValue: 1});
+    this.dedications = counts;
+    this.dedications.sort(this.compareWithValueField);
+    let i :number = 1;
+    for (item of this.dedications) { item.colorValue=i++; }
+
+    // update graph
+    this.chartOptions5.series[0] = {
+      type: 'treemap',
+      data: this.dedications
+    }
+    this.updateFlag5 = true;
+  }
+  
+
+  getCount (arr) {
     let i, counts = {};
     for (i = 0; i < arr.length; i++) {
       counts[arr[i]] = 1 + (counts[arr[i]] || 0);
@@ -268,7 +243,20 @@ export class AppComponent implements OnInit {
     return 0;
   }
 
-  //gráfico de Registros MOOC/SPOOC por universidad
+  compareWithValueField(a, b) {
+    if (a.value > b.value) return -1;
+    if (b.value > a.value) return 1;
+    return 0;
+  }
+
+  compareWithInstitutionField(a, b) {
+    if (a.institution > b.institution) return 1;
+    if (b.institution > a.institution) return -1;
+    return 0;
+  }
+
+
+  
   chartOptions: Highcharts.Options = {
     chart: {
       style: {
@@ -336,6 +324,153 @@ export class AppComponent implements OnInit {
         data: this.data
       }
     ]
+  };
+
+  // Tree Map Domain
+  chartOptions3: Highcharts.Options = {
+
+    chart: {
+      style: {
+        fontFamily: 'Poppins'
+      }
+    },
+    colorAxis: {
+      minColor: '#0d47a1',
+      maxColor: '#e3f2fd',
+    },
+    series: [{
+      type: 'treemap',
+      data: [{
+        name: 'Ciencias aplicadas',
+        value: 6,
+        colorValue: 1
+      }, {
+        name: 'Estudios Sociales',
+        value: 6,
+        colorValue: 2
+      }, {
+        name: 'Matematicas',
+        value: 4,
+        colorValue: 3
+      }, {
+        name: 'lenguaje y literatura',
+        value: 3,
+        colorValue: 4
+      }, {
+        name: 'E',
+        value: 2,
+        colorValue: 5
+      }, {
+        name: 'F',
+        value: 2,
+        colorValue: 6
+      }, {
+        name: 'Gastronomia',
+        value: 1,
+        colorValue: 7
+      }]
+    }],
+    title: {
+      text: 'Dominios'
+    }
+  };
+
+  // Tree Map DurationWeek
+  chartOptions4: Highcharts.Options = {
+
+    chart: {
+      style: {
+        fontFamily: 'Poppins'
+      }
+    },
+    colorAxis: {
+      minColor: '#007E33',
+      maxColor: '#fff',
+    },
+    series: [{
+      type: 'treemap',
+      data: [{
+        name: 'A',
+        value: 6,
+        colorValue: 1
+      }, {
+        name: 'B',
+        value: 6,
+        colorValue: 2
+      }, {
+        name: 'C',
+        value: 4,
+        colorValue: 3
+      }, {
+        name: 'D',
+        value: 3,
+        colorValue: 4
+      }, {
+        name: 'E',
+        value: 2,
+        colorValue: 5
+      }, {
+        name: 'F',
+        value: 2,
+        colorValue: 6
+      }, {
+        name: 'G',
+        value: 1,
+        colorValue: 7
+      }]
+    }],
+    title: {
+      text: 'Duración en semanas'
+    }
+  };
+
+  // Tree Map DurationHours
+  chartOptions5: Highcharts.Options = {
+
+    chart: {
+      style: {
+        fontFamily: 'Poppins'
+      }
+    },
+    colorAxis: {
+      minColor: '#b71c1c',
+      maxColor: '#ffebee',
+    },
+    series: [{
+      type: 'treemap',
+      data: [{
+        name: 'A',
+        value: 6,
+        colorValue: 1
+      }, {
+        name: 'B',
+        value: 6,
+        colorValue: 2
+      }, {
+        name: 'C',
+        value: 4,
+        colorValue: 3
+      }, {
+        name: 'D',
+        value: 3,
+        colorValue: 4
+      }, {
+        name: 'E',
+        value: 2,
+        colorValue: 5
+      }, {
+        name: 'F',
+        value: 2,
+        colorValue: 6
+      }, {
+        name: 'G',
+        value: 1,
+        colorValue: 7
+      }]
+    }],
+    title: {
+      text: 'Duración en horas'
+    }
   };
 
 }
