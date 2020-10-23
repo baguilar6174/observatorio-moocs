@@ -55,12 +55,12 @@ export class AppComponent implements OnInit {
   }
 
   updateGraphs(indicator: string, index: number) {
-    
+
     //Control de card activada y desactivada
     for (var _i = 0; _i < this.cards.length; _i++) {
-      if(index === _i){
+      if (index === _i) {
         this.cards[_i].select = true;
-      }else{
+      } else {
         this.cards[_i].select = false;
       }
     }
@@ -73,17 +73,17 @@ export class AppComponent implements OnInit {
 
   generateCards() {
     let item, arr = [];
-    let cont : number = 0;
+    let cont: number = 0;
     for (item of this.data) {
       arr.push(item.mooc_spooc);
     }
     let counts = this.getCount(arr);
     for (const property in counts) {
       cont++;
-      if(cont==1){
-        this.cards.push({ type: property, value: counts[property], select: true});
-      }else{
-        this.cards.push({ type: property, value: counts[property], select: false});
+      if (cont == 1) {
+        this.cards.push({ type: property, value: counts[property], select: true });
+      } else {
+        this.cards.push({ type: property, value: counts[property], select: false });
       }
     }
   }
@@ -124,21 +124,21 @@ export class AppComponent implements OnInit {
     this.updateFlag = true;
   }
 
-  generateDomainCoursesCountGraph (indicator: string) {
+  generateDomainCoursesCountGraph(indicator: string) {
     // generate data
     this.domains = [];
     let item, arr = [];
     for (item of this.data) {
-      (item.mooc_spooc===indicator) && arr.push(item.dominio_aprendizaje);
+      (item.mooc_spooc === indicator) && arr.push(item.dominio_aprendizaje);
     }
     let counts = this.getCount(arr);
     for (const property in counts) {
       this.domains.push({ name: property, value: counts[property], colorValue: 1 });
     }
     this.domains.sort(this.compareWithValueField);
-    let i :number = 1;
+    let i: number = 1;
     for (item of this.domains) {
-      item.colorValue=i++;
+      item.colorValue = i++;
     }
 
     // update graph
@@ -149,16 +149,16 @@ export class AppComponent implements OnInit {
     this.updateFlag3 = true;
   }
 
-  generateDurationCoursesCountGraph (indicator: string) {
+  generateDurationCoursesCountGraph(indicator: string) {
     // generate data
     this.durations = [];
     let item, label, a, b, arr = [];
     for (item of this.data) {
-      if (item.mooc_spooc===indicator) {
+      if (item.mooc_spooc === indicator) {
         a = item.duracion_semanas.split('/');
-        if(a[0].includes("semana")) {
+        if (a[0].includes("semana")) {
           b = a[0].split(' ');
-          label = (b[0]==='1') ? (b[0]+' semana') : (b[0]+' semanas');
+          label = (b[0] === '1') ? (b[0] + ' semana') : (b[0] + ' semanas');
         } else {
           label = a[0];
         }
@@ -170,9 +170,9 @@ export class AppComponent implements OnInit {
       this.durations.push({ name: property, value: counts[property], colorValue: 1 });
     }
     this.durations.sort(this.compareWithValueField);
-    let i :number = 1;
+    let i: number = 1;
     for (item of this.durations) {
-      item.colorValue=i++;
+      item.colorValue = i++;
     }
 
     // update graph
@@ -183,42 +183,42 @@ export class AppComponent implements OnInit {
     this.updateFlag4 = true;
   }
 
-  generateDedicationCoursesCountGraph (indicator: string) {
+  generateDedicationCoursesCountGraph(indicator: string) {
     // generate data 
     this.dedications = [];
     let item, label, a, b, arr = [];
     for (item of this.data) {
-      if (item.mooc_spooc===indicator) {
+      if (item.mooc_spooc === indicator) {
         a = item.dedicacion_horas_semanas.split('/');
-        if(a[0].includes("hora")) {
+        if (a[0].includes("hora")) {
           b = a[0].split(' ');
           if (Number(b[0].trim())) {
-            label = {institution: item.institucion, dedication: Number(b[0].trim())};
+            label = { institution: item.institucion, dedication: Number(b[0].trim()) };
             arr.push(label);
           }
-        } 
+        }
       }
     }
 
     arr.sort(this.compareWithInstitutionField);
-    let institution= (arr[0]) ? arr[0].institution: '';
+    let institution = (arr[0]) ? arr[0].institution : '';
     let sum: number = 0, cont: number = 0, counts = [];
     for (item of arr) {
-      if (item.institution===institution) {
+      if (item.institution === institution) {
         sum += Number(item.dedication);
         cont++;
       } else {
-        counts.push({name: institution, value: (Math.round((sum/cont)*100)/100), colorValue: 1});
+        counts.push({ name: institution, value: (Math.round((sum / cont) * 100) / 100), colorValue: 1 });
         institution = item.institution;
         sum = Number(item.dedication);
         cont = 1;
       }
     }
-    counts.push({name: item.institution, value: (sum/cont), colorValue: 1});
+    counts.push({ name: item.institution, value: (sum / cont), colorValue: 1 });
     this.dedications = counts;
     this.dedications.sort(this.compareWithValueField);
-    let i :number = 1;
-    for (item of this.dedications) { item.colorValue=i++; }
+    let i: number = 1;
+    for (item of this.dedications) { item.colorValue = i++; }
 
     // update graph
     this.chartOptions5.series[0] = {
@@ -227,9 +227,9 @@ export class AppComponent implements OnInit {
     }
     this.updateFlag5 = true;
   }
-  
 
-  getCount (arr) {
+
+  getCount(arr) {
     let i, counts = {};
     for (i = 0; i < arr.length; i++) {
       counts[arr[i]] = 1 + (counts[arr[i]] || 0);
@@ -256,7 +256,7 @@ export class AppComponent implements OnInit {
   }
 
 
-  
+
   chartOptions: Highcharts.Options = {
     chart: {
       style: {
@@ -472,5 +472,50 @@ export class AppComponent implements OnInit {
       text: 'Duración en horas'
     }
   };
+
+
+
+  chartOptions6: Highcharts.Options = {
+
+    chart: {
+      type: 'bar'
+    },
+    title: {
+      text: 'Stacked bar chart'
+    },
+    xAxis: {
+      categories: ['UNiversidad 1', 'UNiversidad 2', 'UNiversidad 3', 'UNiversidad 4', 'UNiversidad 5']
+    },
+    yAxis: {
+      min: 0,
+      title: {
+        text: 'Total fruit consumption'
+      }
+    },
+    legend: {
+      reversed: true
+    },
+    plotOptions: {
+      series: {
+        stacking: 'normal'
+      }
+    },
+    series: [{
+      name: 'MOOC',
+      type : 'bar',
+      data: [5, 3, 4, 7, 2]
+    }, {
+      name: 'NOOC',
+      type : 'bar',
+      data: [0, 2, 3, 2, 1]
+    }, {
+      name: 'SPOC',
+      type : 'bar',
+      data: [0, 4, 4, 2, 5]
+    }]
+  };
+
+
+
 
 }
