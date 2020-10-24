@@ -51,7 +51,6 @@ export class AppComponent implements OnInit {
   // Stacked Bar (plataformas por institución)
   platformsStackedBarChart = new Chart();
 
-  //Variable spara almacenar datos
   data = [];
   cards = [];
   courses = [];
@@ -74,6 +73,7 @@ export class AppComponent implements OnInit {
       this.generateDedicationCoursesCountGraph(indicator);
       this.generatePlatformCountGraph();
     });
+    
   }
 
   updateGraphs(indicator: string, index: number) {
@@ -448,7 +448,7 @@ export class AppComponent implements OnInit {
         hideDelay: 2000,
         style: { "color": "black", "cursor": "default", "fontSize": "12px", "pointerEvents": "auto", "whiteSpace": "normal" },
         formatter: function () {
-          return this.x + '<br><b>Número de cursos: ' + this.y + '<b><br><a href="#" class="tooltip-platform">www.' + this.x + '.com</a>';
+          return this.x + '<br> <b>Plataforma utilizada: </b>' + this.series.name + '<b><br>Número de cursos: ' + this.y + '</b>';
         }
       },
       series: seriesPlatforms
