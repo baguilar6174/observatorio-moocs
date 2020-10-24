@@ -8,6 +8,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
 import { HttpClientModule } from '@angular/common/http';
 import { GoogleSheetsDbService } from 'ng-google-sheets-db';
 
+import { ChartModule } from 'angular-highcharts';
+
 @NgModule({
   declarations: [
     AppComponent
@@ -16,7 +18,8 @@ import { GoogleSheetsDbService } from 'ng-google-sheets-db';
     BrowserModule,
     AppRoutingModule,
     HighchartsChartModule,
-    HttpClientModule
+    HttpClientModule,
+    ChartModule
   ],
   providers: [GoogleSheetsDbService],
   bootstrap: [AppComponent]
