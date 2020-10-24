@@ -1,12 +1,73 @@
 <router-outlet>
 </router-outlet>
 <!-- As a heading -->
-<header class="container">
-    <nav class="navbar navbar-dark bg-dark">
-        <span class="navbar-brand mb-0 h1">Observatorio MOOC-CEDIA</span>
+<header class="container-fluid fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand">Observatorio MOOC-CEDIA</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link">Inicio <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" (click)="moveSection(demografy)">Demografía</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" (click)="moveSection(ranking)">Ranking</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" (click)="moveSection(characteristics)">Características</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" (click)="moveSection(platforms)">Plataformas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" (click)="openModal_aboutus(aboutus)">Acerca de</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" (click)="moveSection(contact)">Contacto</a>
+                </li>
+            </ul>
+        </div>
     </nav>
 </header>
+<!-- Seccion Selector de año -->
+<section class="container py-4 mt-5">
+    <div class="row justify-content-end">
+        <div class="col-4 text-right">
+            <div class="btn-group" dropdown placement="bottom right">
+                <button id="button-alignment" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-alignment">
+                  Año <span class="caret"></span>
+                </button>
+                <ul id="dropdown-alignment" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="button-alignment">
+                    <li role="menuitem"><a class="dropdown-item" href="#">2020</a></li>
+                    <li role="menuitem"><a class="dropdown-item" href="#">2021</a></li>
+                    <li role="menuitem"><a class="dropdown-item" href="#">2022</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Seccion Demografía -->
+<section #demografy class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h5>Demografía</h5>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+</section>
+<!-- Seccion Indicadores -->
 <section class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h5>Indicadores</h5>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12 col-md-4 my-3 my-md-0" *ngFor="let indicator of cards; let index = index">
             <div class="card text-center indicator" [ngClass]="{'select' : indicator.select}" (click)="updateGraphs(indicator.type, index)">
@@ -18,44 +79,79 @@
         </div>
     </div>
 </section>
-<section class="container py-4">
+<!-- Seccion Ranking -->
+<section #ranking class="container py-4">
     <div class="row">
         <div class="col-12">
-            <highcharts-chart [(update)]="updateFlag" [Highcharts]="Highcharts" [options]="chartOptions" style="width: 100%; height: 400px; display: block;"></highcharts-chart>
+            <h5>Ranking</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div [chart]="chart"></div>
         </div>
     </div>
 </section>
-<section class="container py-4">
+<!-- Seccion Características -->
+<section #characteristics class="container py-4">
     <div class="row">
-        <div class="col-12 col-md-4">
+        <div class="col-12">
+            <h5>Características</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-md-6">
             <highcharts-chart [(update)]="updateFlag3" [Highcharts]="Highcharts" [options]="chartOptions3" style="width: 100%; height: 400px; display: block;"></highcharts-chart>
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-6">
             <highcharts-chart [(update)]="updateFlag4" [Highcharts]="Highcharts" [options]="chartOptions4" style="width: 100%; height: 400px; display: block;"></highcharts-chart>
         </div>
-        <div class="col-12 col-md-4">
-            <highcharts-chart [(update)]="updateFlag5" [Highcharts]="Highcharts" [options]="chartOptions5" style="width: 100%; height: 400px; display: block;"></highcharts-chart>
-        </div>
     </div>
 </section>
-<section class="container py-4">
+<!-- Seccion Plataformas -->
+<div #platforms></div>
+<section *ngIf="seriesPlatforms?.length>0" class="container py-4">
     <div class="row">
         <div class="col-12">
-            <highcharts-chart [(update)]="updateFlag2" [Highcharts]="Highcharts" [options]="chartOptions2" style="width: 100%; height: 400px; display: block;"></highcharts-chart>
+            <h5>Plataformas</h5>
         </div>
     </div>
-</section>
-<section class="container py-4">
     <div class="row">
         <div class="col-12">
-            <highcharts-chart [Highcharts]="Highcharts" [options]="chartOptions6" style="width: 100%; height: 400px; display: block;"></highcharts-chart>
+            <highcharts-chart [(update)]="updateFlag6" [Highcharts]="Highcharts" [options]="chartOptions6" style="width: 100%; height: 700px; display: block;"></highcharts-chart>
         </div>
     </div>
 </section>
-<footer class="container navbar-dark bg-dark">
+<!-- Seccion de contacto -->
+<section #contact class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h5>Contacto</h5>
+        </div>
+    </div>
+</section>
+<!-- Pie de página -->
+<footer class="container-fluid">
     <div class="row py-3">
         <div class="col-md-12 text-center">
-            <span class="navbar-brand mb-0">© 2020 Todos los derechos reservados.</span>
+            <h6>© 2020 Todos los derechos reservados.</h6>
         </div>
     </div>
 </footer>
+
+
+<ng-template #aboutus>
+    <div class="modal-header">
+        <h4 class="modal-title tittle-5 ml-3 mt-2">Acerca de</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body text-justify">
+        <div class="row px-3">
+            <div class="col-12">
+                <p class="">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quia praesentium saepe aperiam quis fugiat cum maxime ad quasi ducimus! Reprehenderit magnam laudantium perferendis animi ipsam!</p>
+            </div>
+        </div>
+    </div>
+</ng-template>

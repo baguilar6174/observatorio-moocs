@@ -1,7 +1,8 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { Record } from './models/record.model';
 import { DataService } from './services/data.service';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 import More from 'highcharts/highcharts-more';
 More(Highcharts);
@@ -9,6 +10,15 @@ import Tree from 'highcharts/modules/treemap';
 Tree(Highcharts);
 import Heatmap from 'highcharts/modules/heatmap';
 Heatmap(Highcharts);
+
+import HighchartsMap from "highcharts/modules/map";
+import { ModalCoursesComponent } from './view/modal-courses/modal-courses.component';
+HighchartsMap(Highcharts);
+
+import { Chart } from 'angular-highcharts';
+
+declare let $: any;
+
 
 @Component({
   selector: 'app-root',
@@ -20,16 +30,20 @@ export class AppComponent implements OnInit {
   //Para los histogramas
   Highcharts: typeof Highcharts = Highcharts;
 
-  //Actualización en gráfico de Registros MOOC/SPOOC por universidad
-  updateFlag = false;
-  //Actualización en gráfico de Recuento MOOC/SPOOC por universidad
-  updateFlag2 = false;
   //Actualización en gráfico de TreeMap Dominio
   updateFlag3 = false;
   //Actualización en gráfico de TreeMap DurationWeek
   updateFlag4 = false;
-  //Actualización en gráfico de TreeMap DurationHours
-  updateFlag5 = false;
+  //Actualización en gráfico de SnackBar Platforms
+  updateFlag6 = false;
+
+  // global Indicator (MOOC/NOOC/SPOC)
+  indicatorGlobal: string = '';
+
+  // snackbar (registros mooc/cpoc/nooc por unversidad)
+  categoriesCourses = [];
+  seriesInstitutions = [];
+  chart = new Chart();
 
   //Variable spara almacenar datos
   data = [];
@@ -39,22 +53,28 @@ export class AppComponent implements OnInit {
   domains = [];
   durations = [];
   dedications = [];
+  categoriesPlatforms = [];
+  seriesPlatforms = [];
 
-  constructor(private ds: DataService) { }
+  constructor(private ds: DataService, private modalService: BsModalService,) { }
 
   ngOnInit(): void {
     this.ds.getData().subscribe((data: Record[]) => {
       this.data = data;
       let indicator: string = 'MOOC';
+      this.indicatorGlobal = indicator;
       this.generateCards();
       this.generateCoursesCountGraph(indicator);
       this.generateDomainCoursesCountGraph(indicator);
       this.generateDurationCoursesCountGraph(indicator);
       this.generateDedicationCoursesCountGraph(indicator);
+      this.generatePlatformCountGraph();
     });
   }
 
   updateGraphs(indicator: string, index: number) {
+
+    this.indicatorGlobal = indicator;
 
     //Control de card activada y desactivada
     for (var _i = 0; _i < this.cards.length; _i++) {
@@ -69,6 +89,7 @@ export class AppComponent implements OnInit {
     this.generateDomainCoursesCountGraph(indicator);
     this.generateDurationCoursesCountGraph(indicator);
     this.generateDedicationCoursesCountGraph(indicator);
+    this.generatePlatformCountGraph();
   }
 
   generateCards() {
@@ -89,39 +110,126 @@ export class AppComponent implements OnInit {
   }
 
   generateCoursesCountGraph(indicator: string) {
-    // generate data
-    this.courses = [];
-    this.categories = [];
-    let item, arr = [];
+
+    this.categoriesCourses = [];
+    this.seriesInstitutions = [];
+
+    // generate data 
+    let item, key, arrInst = [], arrTypeInst = [];
+    let universitiesMap = new Map();
+    let auxInstTypeMap = new Map();
+    let instTypeMap = new Map();
+
+    // get universities map
     for (item of this.data) {
-      (item.mooc_spooc === indicator) && arr.push(item.institucion);
+      if ((item.mooc_spooc === indicator)) {
+        key = item.institucion.trim();
+        if (universitiesMap.has(key)) {
+          universitiesMap.get(key).push(item);
+        } else {
+          universitiesMap.set(key, [item]);
+        }
+
+        key = item.tipo_institucion.trim().toLowerCase();
+        auxInstTypeMap.set(key, 0);
+        instTypeMap.set(key, []);
+
+        arrTypeInst.push(item.tipo_institucion.trim().toLowerCase());
+        arrInst.push(item.institucion.trim());
+      }
     }
-    let counts = this.getCount(arr);
+
+    // get institutions type
+    let counts = this.getCount(arrTypeInst);
+    arrTypeInst = [];
     for (const property in counts) {
-      this.courses.push({ name: property, y: counts[property] });
+      arrTypeInst.push({ name: property, value: counts[property] });
     }
-    this.courses.sort(this.compareCoursesCount);
-    for (item of this.courses) {
-      this.categories.push(item.name);
+    arrTypeInst.sort(this.compareWithValueField);
+    // console.log(arrTypeInst);
+
+    // get universities
+    counts = this.getCount(arrInst);
+    arrInst = [];
+    for (const property in counts) {
+      arrInst.push({ name: property, value: counts[property] });
+    }
+    arrInst.sort(this.compareWithValueField);
+    // console.log(arrInst);
+
+    let record, tipo_institucion;
+    for (item of arrInst) {
+      // console.log({name: item.name});
+      // console.log(universitiesMap.get(item.name));
+      for (record of universitiesMap.get(item.name)) {
+        tipo_institucion = record.tipo_institucion.trim().toLowerCase();
+        auxInstTypeMap.set(tipo_institucion, (auxInstTypeMap.get(tipo_institucion) + 1));
+        // console.log(platform);
+      }
+      // console.log(auxPlatformMap);
+      for (let [key, value] of auxInstTypeMap) {
+        instTypeMap.get(key).push(value);
+      }
+      auxInstTypeMap = this.getEmptyMap(auxInstTypeMap);
     }
 
-    // Graph update
-    this.chartOptions.series[0] = {
-      type: 'bar',
-      data: this.courses
+    // categories
+    for (item of arrInst) {
+      this.categoriesCourses.push(item.name);
     }
-    this.chartOptions.xAxis = { categories: this.categories };
-    this.chartOptions.title = { text: `Número de registros ${indicator} por universidad` };
-    this.updateFlag2 = true;
+    // console.log(this.categoriesCourses);
 
-    /**----------------------------------- */
-    this.chartOptions2.series[0] = {
-      type: 'bar',
-      data: this.courses
+    // series
+    for (let [key, value] of instTypeMap) {
+      this.seriesInstitutions.push({ name: this.capitalize(key), type: 'bar', data: value });
     }
-    this.chartOptions2.xAxis = { categories: this.categories };
-    this.chartOptions2.title = { text: `Número de MOOC/SPOOC ${indicator} por universidad` };
-    this.updateFlag = true;
+    // console.log(this.seriesInstitutions);
+
+    let chart = new Chart({
+      chart: {
+        type: "bar"
+      },
+      title: {
+        text: `Número de Registros ${this.indicatorGlobal} por Universidad`
+      },
+      xAxis: {
+        categories: this.categoriesCourses
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: `Recuento de ${this.indicatorGlobal}`
+        }
+      },
+      plotOptions: {
+        series: {
+          stacking: "normal"
+        }
+      },
+      credits: {
+        enabled: false
+      },
+      tooltip: {
+        backgroundColor: '#fff',
+        borderRadius: 0.0,
+        borderWidth: 0.0,
+        padding: 15.0,
+        useHTML: true,
+        enabled: true,
+        animation: false,
+        distance: 25,
+        followTouchMove: true,
+        hideDelay: 2000,
+        style: { "color": "black", "cursor": "default", "fontSize": "12px", "pointerEvents": "auto", "whiteSpace": "normal" },
+        formatter: function () {
+          return this.x + '<br><b>Número de cursos: ' + this.y + '<b><br><a href="#" class="tooltip-platform">www.' + this.x + '.com</a>';
+        }
+      },
+      series: this.seriesInstitutions
+    });
+
+    this.chart = chart;
+
   }
 
   generateDomainCoursesCountGraph(indicator: string) {
@@ -136,9 +244,8 @@ export class AppComponent implements OnInit {
       this.domains.push({ name: property, value: counts[property], colorValue: 1 });
     }
     this.domains.sort(this.compareWithValueField);
-    let i: number = 1;
     for (item of this.domains) {
-      item.colorValue = i++;
+      item.colorValue = item.value;
     }
 
     // update graph
@@ -170,9 +277,8 @@ export class AppComponent implements OnInit {
       this.durations.push({ name: property, value: counts[property], colorValue: 1 });
     }
     this.durations.sort(this.compareWithValueField);
-    let i: number = 1;
     for (item of this.durations) {
-      item.colorValue = i++;
+      item.colorValue = item.value;
     }
 
     // update graph
@@ -219,20 +325,103 @@ export class AppComponent implements OnInit {
     this.dedications.sort(this.compareWithValueField);
     let i: number = 1;
     for (item of this.dedications) { item.colorValue = i++; }
-
-    // update graph
-    this.chartOptions5.series[0] = {
-      type: 'treemap',
-      data: this.dedications
-    }
-    this.updateFlag5 = true;
   }
 
+  generatePlatformCountGraph() {
+    // generate data 
+    let item, key, arrInst = [], arrPlat = [];
+    let universitiesMap = new Map();
+    let auxPlatformMap = new Map();
+    let platformMap = new Map();
+
+    // get universities map
+    for (item of this.data) {
+      key = item.institucion.trim();
+      if (universitiesMap.has(key)) {
+        universitiesMap.get(key).push(item);
+      } else {
+        universitiesMap.set(key, [item]);
+      }
+
+      key = item.plataforma.trim().toLowerCase();
+      auxPlatformMap.set(key, 0);
+      platformMap.set(key, []);
+
+      arrPlat.push(item.plataforma);
+      arrInst.push(item.institucion);
+    }
+    // console.log(universitiesMap);
+    // console.log(auxPlatformMap);
+    // console.log(platformMap);
+
+
+    // get platforms
+    let counts = this.getCount(arrPlat);
+    arrPlat = [];
+    for (const property in counts) {
+      arrPlat.push({ name: property, value: counts[property] });
+    }
+    arrPlat.sort(this.compareWithNameField);
+    // console.log(arrPlat);
+
+    // get universities
+    counts = this.getCount(arrInst);
+    arrInst = [];
+    for (const property in counts) {
+      arrInst.push({ name: property, value: counts[property] });
+    }
+    arrInst.sort(this.compareWithValueField);
+    // console.log(arrInst);
+
+    let record, platform;
+    for (item of arrInst) {
+      // console.log({name: item.name});
+      // console.log(universitiesMap.get(item.name));
+      for (record of universitiesMap.get(item.name)) {
+        platform = record.plataforma.trim().toLowerCase();
+        auxPlatformMap.set(platform, (auxPlatformMap.get(platform) + 1));
+        // console.log(platform);
+      }
+      // console.log(auxPlatformMap);
+      for (let [key, value] of auxPlatformMap) {
+        platformMap.get(key).push(value);
+      }
+      auxPlatformMap = this.getEmptyMap(auxPlatformMap);
+    }
+    // console.log(platformMap);
+
+    // categories
+    for (item of arrInst) {
+      this.categoriesPlatforms.push(item.name);
+    }
+    // console.log(this.categoriesPlatforms);
+
+    // series
+    for (let [key, value] of platformMap) {
+      this.seriesPlatforms.push({ name: this.capitalize(key), type: 'bar', data: value });
+    }
+    // console.log(this.seriesPlatforms);
+
+    this.chartOptions6.series = this.seriesPlatforms;
+    this.updateFlag6 = true;
+  }
+
+  capitalize(str, lower = false) {
+    return (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
+  }
+
+  getEmptyMap(map: Map<any, any>) {
+    let aux = new Map();
+    for (let [key, value] of map) {
+      aux.set(key, 0);
+    }
+    return aux;
+  }
 
   getCount(arr) {
     let i, counts = {};
     for (i = 0; i < arr.length; i++) {
-      counts[arr[i]] = 1 + (counts[arr[i]] || 0);
+      counts[arr[i].trim()] = 1 + (counts[arr[i].trim()] || 0);
     }
     return counts;
   }
@@ -244,8 +433,14 @@ export class AppComponent implements OnInit {
   }
 
   compareWithValueField(a, b) {
-    if (a.value > b.value) return -1;
-    if (b.value > a.value) return 1;
+    if (a.name > b.name) return 1;
+    if (b.name > a.name) return -1;
+    return 0;
+  }
+
+  compareWithNameField(a, b) {
+    if (a.name > b.name) return 1;
+    if (b.name > a.name) return -1;
     return 0;
   }
 
@@ -255,76 +450,19 @@ export class AppComponent implements OnInit {
     return 0;
   }
 
+  ngAfterViewInit(): void {
 
-
-  chartOptions: Highcharts.Options = {
-    chart: {
-      style: {
-        fontFamily: 'Poppins'
-      }
-    },
-    xAxis: {
-      type: 'category',
-      title: {
-        text: 'Universidad/Institución'
-      },
-      categories: this.categories
-    },
-    yAxis: {
-      min: 0,
-      title: {
-        text: 'Número de registros'
-      }
-    },
-    legend: {
-      enabled: false
-    },
-    series: [
-      {
-        name: "Registros",
-        colorByPoint: false,
-        color: '#4179AB',
-        type: "bar",
-        data: this.data
-      }
-    ]
-  };
-
-  //Recuento MOOC/SPOOC por universidad
-  chartOptions2: Highcharts.Options = {
-
-    chart: {
-      style: {
-        fontFamily: 'Poppins'
-      }
-    },
-
-    xAxis: {
-      type: 'category',
-      title: {
-        text: 'Universidad/Institución'
-      },
-      categories: this.categories
-    },
-    yAxis: {
-      min: 0,
-      title: {
-        text: 'Recuento de MOOC/SPOOC'
-      }
-    },
-    legend: {
-      enabled: false
-    },
-    series: [
-      {
-        name: "Registros",
-        colorByPoint: true,
-        color: '#4179AB',
-        type: "bar",
-        data: this.data
-      }
-    ]
-  };
+    $(document).ready(function () {
+      $(document).on('click', '.comment_triger', function (e) {
+        e.preventDefault();
+        alert("Yahooooooooooo");
+      });
+      $(document).on('click', '.tooltip-platform', function (e) {
+        e.preventDefault();
+        console.log(e.originalEvent.target.innerText);
+      });
+    });
+  }
 
   // Tree Map Domain
   chartOptions3: Highcharts.Options = {
@@ -335,8 +473,22 @@ export class AppComponent implements OnInit {
       }
     },
     colorAxis: {
-      minColor: '#0d47a1',
-      maxColor: '#e3f2fd',
+      minColor: '#e3f2fd',
+      maxColor: '#0d47a1',
+    },
+    tooltip: {
+      backgroundColor: '#fff',
+      borderRadius: 0.0,
+      borderWidth: 0.0,
+      padding: 10.0,
+      useHTML: true,
+      enabled: true,
+      animation: false,
+      hideDelay: 500,
+      style: { "color": "black", "cursor": "default", "fontSize": "12px", "pointerEvents": "auto", "whiteSpace": "normal" },
+      formatter: function () {
+        return this.point.name + '<p><b>Número de MOOC: </b>' + this.point.value + ' cursos<p>';
+      }
     },
     series: [{
       type: 'treemap',
@@ -368,12 +520,65 @@ export class AppComponent implements OnInit {
         name: 'Gastronomia',
         value: 1,
         colorValue: 7
-      }]
+      }],
+      events: {
+        click: (event) => {
+          let cardSelected = this.cards.find(element => element.select);
+          // console.log(event.point.name);
+          // console.log(cardSelected.type);
+          this.openModal(event.point.name, cardSelected.type);
+        },
+      }
     }],
     title: {
-      text: 'Dominios'
+      text: 'Dominios de aprendizaje'
     }
   };
+
+  modalRef: BsModalRef;
+
+  openModal(domain: string, courseType: string) {
+    const initialState = {
+      list: [
+        domain,
+        courseType
+      ]
+    };
+    this.modalRef = this.modalService.show(ModalCoursesComponent,
+      { class: 'modal-dialog-centered', initialState }
+    );
+    this.modalRef.content.closeBtnName = 'Close';
+
+    this.modalRef.content.event.subscribe(res => {
+      //this.itemList.push(res.data);
+      console.log(res.data);
+    });
+  }
+
+  /**
+   * Modal methods
+   * @type {BsModalRef}
+  */
+  public modalRefAboutUs: BsModalRef;
+
+
+  /**
+   * Allows to open and close the modal terms and conditions
+   * @param {TemplateRef<any>} template - Identifier of the modal HTML tag
+  */
+  openModal_aboutus(template: TemplateRef<any>) {
+    this.modalRefAboutUs = this.modalService.show(template);
+    this.modalRefAboutUs.setClass('modal-dialog-centered');
+  }
+
+  /**
+  * Move between sections of the page
+  * @param {HTMLElement} element - HTML identifier
+  * @return {void} Nothing
+ */
+  moveSection(element: HTMLElement) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
 
   // Tree Map DurationWeek
   chartOptions4: Highcharts.Options = {
@@ -384,58 +589,23 @@ export class AppComponent implements OnInit {
       }
     },
     colorAxis: {
-      minColor: '#007E33',
-      maxColor: '#fff',
+      minColor: '#fff',
+      maxColor: '#007E33',
     },
-    series: [{
-      type: 'treemap',
-      data: [{
-        name: 'A',
-        value: 6,
-        colorValue: 1
-      }, {
-        name: 'B',
-        value: 6,
-        colorValue: 2
-      }, {
-        name: 'C',
-        value: 4,
-        colorValue: 3
-      }, {
-        name: 'D',
-        value: 3,
-        colorValue: 4
-      }, {
-        name: 'E',
-        value: 2,
-        colorValue: 5
-      }, {
-        name: 'F',
-        value: 2,
-        colorValue: 6
-      }, {
-        name: 'G',
-        value: 1,
-        colorValue: 7
-      }]
-    }],
-    title: {
-      text: 'Duración en semanas'
-    }
-  };
-
-  // Tree Map DurationHours
-  chartOptions5: Highcharts.Options = {
-
-    chart: {
-      style: {
-        fontFamily: 'Poppins'
+    tooltip: {
+      backgroundColor: '#fff',
+      borderRadius: 0.0,
+      borderWidth: 0.0,
+      padding: 10.0,
+      useHTML: true,
+      enabled: true,
+      animation: false,
+      hideDelay: 500,
+      style: { "color": "black", "cursor": "default", "fontSize": "12px", "pointerEvents": "auto", "whiteSpace": "normal" },
+      formatter: function () {
+        return '<p><b>Cursos con duración de ' + this.point.name + '</b>: ' + this.point.value + '<p>';
       }
     },
-    colorAxis: {
-      minColor: '#b71c1c',
-      maxColor: '#ffebee',
-    },
     series: [{
       type: 'treemap',
       data: [{
@@ -469,11 +639,9 @@ export class AppComponent implements OnInit {
       }]
     }],
     title: {
-      text: 'Duración en horas'
+      text: 'Duración en semanas de los cursos'
     }
   };
-
-
 
   chartOptions6: Highcharts.Options = {
 
@@ -481,15 +649,15 @@ export class AppComponent implements OnInit {
       type: 'bar'
     },
     title: {
-      text: 'Stacked bar chart'
+      text: 'Plataformas por Institución'
     },
     xAxis: {
-      categories: ['UNiversidad 1', 'UNiversidad 2', 'UNiversidad 3', 'UNiversidad 4', 'UNiversidad 5']
+      categories: this.categoriesPlatforms
     },
     yAxis: {
       min: 0,
       title: {
-        text: 'Total fruit consumption'
+        text: 'Recuento de MOOC/SPOC/NOOC'
       }
     },
     legend: {
@@ -500,22 +668,7 @@ export class AppComponent implements OnInit {
         stacking: 'normal'
       }
     },
-    series: [{
-      name: 'MOOC',
-      type : 'bar',
-      data: [5, 3, 4, 7, 2]
-    }, {
-      name: 'NOOC',
-      type : 'bar',
-      data: [0, 2, 3, 2, 1]
-    }, {
-      name: 'SPOC',
-      type : 'bar',
-      data: [0, 4, 4, 2, 5]
-    }]
+    series: []
   };
-
-
-
 
 }
