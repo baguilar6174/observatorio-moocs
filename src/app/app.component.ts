@@ -34,8 +34,6 @@ export class AppComponent implements OnInit {
   updateFlag3 = false;
   //Actualización en gráfico de TreeMap DurationWeek
   updateFlag4 = false;
-  //Actualización en gráfico de SnackBar Platforms
-  updateFlag6 = false;
 
   // snackbar (registros mooc/cpoc/nooc por unversidad)
   categoriesCourses = [];
@@ -43,7 +41,7 @@ export class AppComponent implements OnInit {
 
   //Variable spara almacenar datos
   // global Indicator (MOOC/NOOC/SPOC)
-  indicatorGlobal : string = '';
+  indicatorGlobal: string = '';
 
   // Stacked Bar (registros mooc/cpoc/nooc por unversidad)
   coursesStackedBarChart = new Chart();
@@ -73,7 +71,7 @@ export class AppComponent implements OnInit {
       this.generateDedicationCoursesCountGraph(indicator);
       this.generatePlatformCountGraph();
     });
-    
+
   }
 
   updateGraphs(indicator: string, index: number) {
@@ -129,11 +127,11 @@ export class AppComponent implements OnInit {
         } else {
           universitiesMap.set(key, [item]);
         }
-  
+
         key = item.tipo_institucion.trim().toLowerCase();
         auxInstTypeMap.set(key, 0);
         instTypeMap.set(key, []);
-        
+
         arrTypeInst.push(item.tipo_institucion.trim().toLowerCase());
         arrInst.push(item.institucion.trim());
       }
@@ -168,7 +166,7 @@ export class AppComponent implements OnInit {
       // console.log(universitiesMap.get(item.name));
       for (record of universitiesMap.get(item.name)) {
         tipo_institucion = record.tipo_institucion.trim().toLowerCase();
-        auxInstTypeMap.set(tipo_institucion, (auxInstTypeMap.get(tipo_institucion)+1));
+        auxInstTypeMap.set(tipo_institucion, (auxInstTypeMap.get(tipo_institucion) + 1));
         // console.log(platform);
       }
       // console.log(auxPlatformMap);
@@ -189,7 +187,7 @@ export class AppComponent implements OnInit {
 
     // series
     for (let [key, value] of instTypeMap) {
-      seriesInstitutions.push({ name: this.capitalize(key), type : 'bar', data: value });
+      seriesInstitutions.push({ name: this.capitalize(key), type: 'bar', data: value });
     }
     // console.log(seriesInstitutions);
 
@@ -354,14 +352,14 @@ export class AppComponent implements OnInit {
       key = item.plataforma.trim().toLowerCase();
       auxPlatformMap.set(key, 0);
       platformMap.set(key, []);
-      
+
       arrPlat.push(item.plataforma);
       arrInst.push(item.institucion);
     }
     // console.log(universitiesMap);
     // console.log(auxPlatformMap);
     // console.log(platformMap);
-    
+
 
     // get platforms
     let counts = this.getCount(arrPlat);
@@ -387,7 +385,7 @@ export class AppComponent implements OnInit {
       // console.log(universitiesMap.get(item.name));
       for (record of universitiesMap.get(item.name)) {
         platform = record.plataforma.trim().toLowerCase();
-        auxPlatformMap.set(platform, (auxPlatformMap.get(platform)+1));
+        auxPlatformMap.set(platform, (auxPlatformMap.get(platform) + 1));
         // console.log(platform);
       }
       // console.log(auxPlatformMap);
@@ -407,7 +405,7 @@ export class AppComponent implements OnInit {
 
     // series
     for (let [key, value] of platformMap) {
-      seriesPlatforms.push({ name: this.capitalize(key), type : 'bar', data: value });
+      seriesPlatforms.push({ name: this.capitalize(key), type: 'bar', data: value });
     }
     // console.log(this.seriesPlatforms);
 
@@ -416,7 +414,7 @@ export class AppComponent implements OnInit {
         type: "bar"
       },
       title: {
-        text: `Plataformas por Institución`
+        text: `Plataformas utilizadas por Institución`
       },
       xAxis: {
         categories: categoriesPlatforms
@@ -462,7 +460,7 @@ export class AppComponent implements OnInit {
     return (lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
   }
 
-  getEmptyMap (map: Map<any, any>) {
+  getEmptyMap(map: Map<any, any>) {
     let aux = new Map();
     for (let [key, value] of map) {
       aux.set(key, 0);
@@ -546,6 +544,14 @@ export class AppComponent implements OnInit {
       enabled: false
     },
     series: [{
+      dataLabels: [{
+        enabled: true,
+        verticalAlign: "top",
+        style: { "whiteSpace": "normal", "position": "absolute", "top": "0" },
+        format: '<p>{point.name}</p><br><p>{point.value}%</p>',
+        useHTML: false,
+        align: 'left'
+      }],
       type: 'treemap',
       data: [{
         name: 'Ciencias aplicadas',
@@ -666,6 +672,11 @@ export class AppComponent implements OnInit {
     },
     series: [{
       type: 'treemap',
+      dataLabels: [{
+        enabled: true,
+        verticalAlign: "top",
+        align: 'left'
+      }],
       data: [{
         name: 'A',
         value: 6,
@@ -699,5 +710,80 @@ export class AppComponent implements OnInit {
     title: {
       text: 'Duración en semanas de los cursos'
     }
+  };
+
+  // Duración promedio en horas de un MOOC por institución.
+  chartOptionsAvgDurationMooc: Highcharts.Options = {
+
+    chart: {
+      type: 'column'
+    },
+    colorAxis: {
+      minColor: '#448aff',
+      maxColor: '#448aff',
+    },
+    title: {
+      text: 'Tipo curso / Universidad/Institución'
+    },
+    subtitle: {
+      text: `MOOC`
+    },
+    xAxis: {
+      type: 'category',
+      labels: {
+        style: {
+          fontSize: '10px',
+          // fontFamily: 'Verdana, sans-serif'
+        }
+      },
+    },
+    yAxis: {
+      min: 0,
+      title: {
+        text: 'Promedio de horas por semana'
+      },
+    },
+    legend: {
+      enabled: false
+    },
+    tooltip: {
+      pointFormat: 'Duración: <b>{point.y:.1f} horas</b>'
+    },
+    credits: {
+      enabled: false
+    },
+    
+    series: [{
+      type: 'column',
+      name: 'Duración',
+      data: [
+        ['Shanghai sadh ash asd dsah', 4.2],
+        ['Beijing', 5.8],
+        ['Karachi', 7.9],
+        ['Shenzhen', 9.7],
+        ['Guangzhou', 10.1],
+        ['Istanbul', 11.7],
+        ['Mumbai', 14.4],
+        ['Moscow', 20.2],
+        ['São Paulo', 24.0],
+      ],
+      dataLabels: {
+        verticalAlign: "top",
+        // style: { "whiteSpace": "normal", "position": "absolute", "top": "0" },
+        format: '<p>{point.y:.1f}</p><br><p>horas</p>',
+        useHTML: false,
+        enabled: true,
+        // rotation: -90,
+        color: '#FFFFFF',
+        // align: 'center',
+        // format: '{point.y:.1f}\nhoras', // one decimal
+        // y: 25, // 10 pixels down from the top
+        style: {
+          fontSize: '10px',
+          textAlign : 'center',
+          // fontFamily: 'Verdana, sans-serif'
+        }
+      }
+    }]
   };
 }

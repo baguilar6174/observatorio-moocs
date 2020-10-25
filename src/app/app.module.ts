@@ -15,11 +15,14 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 import { ModalCoursesComponent } from './view/modal-courses/modal-courses.component';
+import { ChartMapComponent } from './view/chart-map/chart-map.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    ModalCoursesComponent
+    ModalCoursesComponent,
+    ChartMapComponent
   ],
   imports: [
     BrowserAnimationsModule,
