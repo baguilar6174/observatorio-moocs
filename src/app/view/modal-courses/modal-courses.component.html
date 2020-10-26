@@ -1,12 +1,18 @@
+<div class="modal-header">
+    <h6 class="modal-title pull-left">Cursos {{courseType}} de {{domain}}</h6>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
 <div class="modal-body">
-    <div class="modal-header">
-        <h4 class="modal-title pull-left">Cursos Online</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="bsModalRef.hide()">
-            <span aria-hidden="true"><i class="icon-close"></i></span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <p>{{list[0]}}</p>
-        <p>{{list[1]}}</p>
-    </div>
+    <ngx-datatable class="material" [rows]="list" [limit]="5" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" rowHeight="auto">
+        <ngx-datatable-column name="Titulo">
+            <ng-template let-value="value" ngx-datatable-cell-template>{{ value }}</ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Url">
+            <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <a href="{{value}}" target="_blank">{{value}}</a>
+            </ng-template>
+        </ngx-datatable-column>
+    </ngx-datatable>
 </div>

@@ -9,8 +9,8 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link">Inicio <span class="sr-only">(current)</span></a>
+                <li class="nav-item">
+                    <a class="nav-link">Inicio</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" (click)="moveSection(demografy)">Demografía</a>
@@ -37,23 +37,22 @@
 <!-- Seccion Selector de año -->
 <section class="container py-4 mt-5">
     <div class="row justify-content-end">
-        <div class="col-4 text-right">
-            <div class="btn-group" dropdown placement="bottom right">
-                <button id="button-alignment" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-alignment">
-                  Año <span class="caret"></span>
-                </button>
-                <ul id="dropdown-alignment" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="button-alignment">
-                    <li role="menuitem"><a class="dropdown-item" href="#">2020</a></li>
-                    <li role="menuitem"><a class="dropdown-item" href="#">2021</a></li>
-                    <li role="menuitem"><a class="dropdown-item" href="#">2022</a></li>
-                </ul>
+        <div class="col-2 text-right">
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Año de consulta</label>
+                <select class="form-control" id="exampleFormControlSelect1">
+                  <option>2020</option>
+                  <option>2021</option>
+                  <option>2021</option>
+                </select>
             </div>
         </div>
     </div>
 </section>
+
 <!-- Seccion Demografía -->
 <section #demografy class="container py-4">
-    <div class="row">
+    <div class="row pb-4">
         <div class="col-12">
             <h5>Demografía</h5>
         </div>
@@ -66,7 +65,7 @@
 </section>
 <!-- Seccion Indicadores -->
 <section class="container py-4">
-    <div class="row">
+    <div class="row pb-4">
         <div class="col-12">
             <h5>Indicadores</h5>
         </div>
@@ -84,7 +83,7 @@
 </section>
 <!-- Seccion Ranking -->
 <section #ranking class="container py-4">
-    <div class="row">
+    <div class="row pb-4">
         <div class="col-12">
             <h5>Ranking</h5>
         </div>
@@ -97,7 +96,7 @@
 </section>
 <!-- Seccion Características -->
 <section #characteristics class="container py-4">
-    <div class="row">
+    <div class="row pb-4">
         <div class="col-12">
             <h5>Características</h5>
         </div>
@@ -119,7 +118,7 @@
 </section>
 <!-- Seccion Plataformas -->
 <section #platforms class="container py-4">
-    <div class="row">
+    <div class="row pb-4">
         <div class="col-12">
             <h5>Plataformas</h5>
         </div>
@@ -132,7 +131,7 @@
 </section>
 <!-- Seccion de contacto -->
 <section #contact class="container py-4">
-    <div class="row">
+    <div class="row pb-4">
         <div class="col-12">
             <h5>Contacto</h5>
         </div>

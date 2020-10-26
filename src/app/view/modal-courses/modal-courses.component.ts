@@ -4,18 +4,21 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 @Component({
   selector: 'app-modal-courses',
   templateUrl: './modal-courses.component.html',
-  styleUrls: ['./modal-courses.component.scss']
+  styleUrls: ['./modal-courses.component.scss'],
 })
 export class ModalCoursesComponent implements OnInit {
 
+  
+  domain: string = '';
+  courseType: string = '';
   list: any[] = [];
 
   constructor(
     public bsModalRef: BsModalRef,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    console.log(this.list);
+    // console.log(this.list);
   }
 
   // modalRef: BsModalRef;
@@ -24,5 +27,4 @@ export class ModalCoursesComponent implements OnInit {
   triggerEvent(item: string) {
     this.event.emit({ data: item, res: 200 });
   }
-
 }

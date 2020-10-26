@@ -1,5 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
+@import '~@swimlane/ngx-datatable/index.css';
+@import '~@swimlane/ngx-datatable/themes/material.scss';
+@import '~@swimlane/ngx-datatable/assets/icons.css';
 @font-face {
     font-family: "Poppins";
     src: local("Oxygen"), url(./assets/fonts/Poppins-Regular.ttf) format("truetype");

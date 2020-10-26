@@ -67,6 +67,9 @@ export class AppComponent implements OnInit {
   // main cards
   cards = [];
 
+  // Sites map
+  sites;
+
   constructor(private ds: DataService, private modalService: BsModalService,) { }
 
   ngOnInit(): void {
@@ -74,6 +77,7 @@ export class AppComponent implements OnInit {
       this.data = data;
       let indicator: string = 'MOOC';
       this.indicatorGlobal = indicator;
+      this.generateRootSiteUrlList();
       this.generateCards();
       this.generateCoursesCountGraph(indicator);
       this.generateDomainCoursesCountGraph(indicator);
@@ -83,16 +87,26 @@ export class AppComponent implements OnInit {
     });
 
   }
+
+  generateRootSiteUrlList () {
+    let item : Record, key: string, value: string;
+    this.sites = new Map();
+    for (item of this.data) {
+      key=item.institucion.trim();
+      value=item.site_url.trim();
+      this.sites.set(key, value);
+    }
+  }
   
   ngAfterViewInit(): void {
+    let tmpThis = this;
     $(document).ready(function () {
-      $(document).on('click', '.comment_triger', function (e) {
-        e.preventDefault();
-        alert("Yahooooooooooo");
-      });
       $(document).on('click', '.tooltip-platform', function (e) {
         e.preventDefault();
-        console.log(e.originalEvent.target.innerText);
+        // console.log(e);
+        // console.log(e.originalEvent.target.innerText);
+        let url = tmpThis.sites.get(e.originalEvent.target.innerText);
+        window.open(url, "_blank");
       });
     });
   }
@@ -253,7 +267,7 @@ export class AppComponent implements OnInit {
         hideDelay: 2000,
         style: { "color": "black", "cursor": "default", "fontSize": "12px", "pointerEvents": "auto", "whiteSpace": "normal" },
         formatter: function () {
-          return this.x + '<br><b>Número de cursos: ' + this.y + '<b><br><a href="#" class="tooltip-platform">www.' + this.x + '.com</a>';
+          return '<a href="#" target="_blank" class="tooltip-platform">' + this.x + '</a>' + '<br><b>Número de cursos: ' + this.y + '<b>';
         }
       },
       series: seriesInstitutions
@@ -549,15 +563,14 @@ export class AppComponent implements OnInit {
 
   openModal(domain: string, courseType: string) {
     let list = this.getCoursesListByDomainAndType(domain, courseType);
-    console.log(list);
+    // console.log(list);
     const initialState = {
-      list: [
-        domain,
-        courseType,
-      ]
+      domain: domain,
+      courseType: courseType,
+      list : list
     };
     this.modalRef = this.modalService.show(ModalCoursesComponent,
-      { class: 'modal-dialog-centered', initialState }
+      { class: 'modal-dialog-centered modal-lg', initialState }
     );
     this.modalRef.content.closeBtnName = 'Close';
 
@@ -584,8 +597,6 @@ export class AppComponent implements OnInit {
   moveSection(element: HTMLElement) {
     element.scrollIntoView({ behavior: 'smooth' });
   }
-
-
 
   // Tree Map Domain
   chartOptions3: Highcharts.Options = {
@@ -620,10 +631,13 @@ export class AppComponent implements OnInit {
       dataLabels: [{
         enabled: true,
         verticalAlign: "top",
+        align: 'left',
         style: { "whiteSpace": "normal", "position": "absolute", "top": "0" },
-        format: '<p>{point.name}</p><br><p>{point.value}%</p>',
-        useHTML: false,
-        align: 'left'
+        formatter: function () {
+          let total: number = Number(this.series['tree']['childrenTotal']);
+          return `<p>${this.point.name}</p><br><p>${((this.point.value*100)/total).toFixed(2)}%</p>`;
+        },
+        // useHTML: false,
       }],
       type: 'treemap',
       data: [],
@@ -675,7 +689,13 @@ export class AppComponent implements OnInit {
       dataLabels: [{
         enabled: true,
         verticalAlign: "top",
-        align: 'left'
+        align: 'left',
+        style: { "whiteSpace": "normal", "position": "absolute", "top": "0" },
+        formatter: function () {
+          let total: number = Number(this.series['tree']['childrenTotal']);
+          return `<p>${this.point.name}</p><br><p>${((this.point.value*100)/total).toFixed(2)}%</p>`;
+        },
+        // useHTML: false,
       }],
       data: []
     }],

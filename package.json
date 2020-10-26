@@ -21,6 +21,7 @@
     "@angular/router": "~10.0.2",
     "@highcharts/map-collection": "^1.1.3",
     "@popperjs/core": "^2.5.3",
+    "@swimlane/ngx-datatable": "^18.0.0",
     "angular-highcharts": "^10.0.1",
     "bootstrap": "^4.5.3",
     "highcharts": "^8.2.0",

@@ -25,7 +25,7 @@ export class ChartMapComponent implements OnInit {
       map: worldMap
     },
     title: {
-      text: 'Highmaps basic demo'
+      text: 'Cursos por provincia'
     },
     mapNavigation: {
       enabled: true,
@@ -36,8 +36,11 @@ export class ChartMapComponent implements OnInit {
     colorAxis: {
       min: 0
     },
+    credits: {
+      enabled: false
+    },
     series: [{
-      name: 'Random data',
+      name: 'Cursos',
       states: {
         hover: {
           color: '#BADA55'
