@@ -541,7 +541,7 @@ export class AppComponent implements OnInit {
     let item, list = [];
      for (item of this.data) {
       if ((item.mooc_spooc === courseType && item.dominio_aprendizaje === domain)) {
-        list.push(item.titulo_mooc);
+        list.push({titulo: item.titulo_mooc, url: item.url_mooc});
       }
     }
     return list;
@@ -549,6 +549,7 @@ export class AppComponent implements OnInit {
 
   openModal(domain: string, courseType: string) {
     let list = this.getCoursesListByDomainAndType(domain, courseType);
+    console.log(list);
     const initialState = {
       list: [
         domain,
