@@ -58,28 +58,24 @@ export class AppComponent implements OnInit {
 
   // Indicator Global (MOOC/NOOC/SPOC)
   indicatorGlobal: string = '';
-
   // mapa con provincias del ecuador
   ecuadorProvincesMap: Map<any, any>;
-
   // Stacked Bar (registros mooc/cpoc/nooc por unversidad)
   coursesStackedBarChart = new Chart();
-
   // Stacked Bar (plataformas por institución)
   platformsStackedBarChart = new Chart();
-
   // snackbar (registros mooc/cpoc/nooc por unversidad)
   categoriesCourses = [];
   seriesInstitutions = [];
-
   // Google spreadsheet data
+  allData = [];
   data = [];
-
   // main cards
   cards = [];
-
   // Sites map
   sites;
+  // years combobox
+  years: any = [];
 
 
 
@@ -89,33 +85,26 @@ export class AppComponent implements OnInit {
     private formBuilder: FormBuilder
   ) { }
 
-  /**
-   * Define data form
-  */
   dataForm = this.formBuilder.group({
-    year: ['2020'],
+    year: [],
   });
 
-  years: any = ['2020']
-
-  changeYear(e) {
-    // console.log(e.target.value.split(':')[1]);
-    console.log(this.dataForm.value['year']);
-  }
-
+  
   ngOnInit(): void {
-    this.ds.getData().subscribe((data: Record[]) => {
-      this.data = data;
-      let indicator: string = 'MOOC';
-      this.indicatorGlobal = indicator;
-      this.generateRootSiteUrlList();
-      this.generateCards();
-      this.generateMap(indicator);
-      this.generateCoursesCountGraph(indicator);
-      this.generateDomainCoursesCountGraph(indicator);
-      this.generateDurationCoursesCountGraph(indicator);
-      this.generateDedicationCoursesCountGraph(indicator);
-      this.generatePlatformCountGraph();
+    this.ds.getData().subscribe((resp: Record[]) => {
+      this.allData=resp;
+      this.loadYears(resp);
+      this.loadData(resp);
+      // let indicator: string = 'MOOC';
+      // this.indicatorGlobal = indicator;
+      // this.generateRootSiteUrlList();
+      // this.generateCards();
+      // this.generateMap(indicator);
+      // this.generateCoursesCountGraph(indicator);
+      // this.generateDomainCoursesCountGraph(indicator);
+      // this.generateDurationCoursesCountGraph(indicator);
+      // this.generateDedicationCoursesCountGraph(indicator);
+      // this.generatePlatformCountGraph();
     });
   }
 
@@ -134,6 +123,64 @@ export class AppComponent implements OnInit {
 
 
   // functions
+  loadYears(data: Record[]) {
+    let item, arr = [];
+    for (item of data) {
+      arr.push(item.anio.trim());
+    }
+    let counts = this.getCount(arr);
+    arr = [];
+    for (const property in counts) {
+      arr.push(property.toString());
+    }
+    this.years = arr;
+    // console.log(this.years);
+    // arr = [];
+    let yearLabel=(this.years && this.years.length) ? this.years[0] : ''; 
+    this.dataForm.setValue({ year: yearLabel });
+    
+    // if (this.years && this.years.length) {
+    //   for (item of data) {
+    //     if (item.anio.trim()===yearLabel) {
+    //       arr.push(item);
+    //     }
+    //   }
+    //   this.data = arr;
+    // } else {
+    //   this.data = [];
+    // }
+  }
+
+  loadData(data: Record[]) {
+    let item, arr = [];
+    let yearLabel = this.dataForm.value['year'];
+    if (this.years && this.years.length) {
+      for (item of data) {
+        if (item.anio.trim()===yearLabel) {
+          arr.push(item);
+        }
+      }
+      this.data = arr;
+    } else {
+      this.data = [];
+    }
+    let indicator: string = 'MOOC';
+    this.indicatorGlobal = indicator;
+    this.generateRootSiteUrlList();
+    this.generateCards();
+    this.generateMap(indicator);
+    this.generateCoursesCountGraph(indicator);
+    this.generateDomainCoursesCountGraph(indicator);
+    this.generateDurationCoursesCountGraph(indicator);
+    this.generateDedicationCoursesCountGraph(indicator);
+    this.generatePlatformCountGraph();
+  }
+
+  changeYear(e) {
+    console.log(this.dataForm.value['year']);
+    this.loadData(this.allData);
+  } 
+
   updateGraphs(indicator: string, index: number) {
 
     this.indicatorGlobal = indicator;
@@ -192,6 +239,8 @@ export class AppComponent implements OnInit {
     }
   }
 
+  
+
 
   // Graphs Functions
   generateMap(indicator: string) {
@@ -227,6 +276,7 @@ export class AppComponent implements OnInit {
   }
 
   generateCards() {
+    this.cards = [];
     let item, arr = [];
     let cont: number = 0;
     for (item of this.data) {

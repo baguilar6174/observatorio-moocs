@@ -61,7 +61,7 @@
             <h5>Indicadores</h5>
         </div>
     </div>
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-12 col-md-4 my-3 my-md-0" *ngFor="let indicator of cards; let index = index">
             <div class="card text-center indicator" [ngClass]="{'select' : indicator.select}" (click)="updateGraphs(indicator.type, index)">
                 <div class="card-body">
