@@ -11,6 +11,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { ModalCoursesComponent } from './view/modal-courses/modal-courses.component';
 import { ChartMapComponent } from './view/chart-map/chart-map.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
 
 
 @NgModule({
@@ -28,6 +29,8 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
     ChartModule,
     ModalModule.forRoot(),
     NgxDatatableModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [GoogleSheetsDbService],
   entryComponents: [ModalCoursesComponent],

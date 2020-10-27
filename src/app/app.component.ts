@@ -16,6 +16,7 @@ import { ModalCoursesComponent } from './view/modal-courses/modal-courses.compon
 HighchartsMap(Highcharts);
 
 import { Chart } from 'angular-highcharts';
+import { FormBuilder } from '@angular/forms';
 
 declare let $: any;
 
@@ -37,7 +38,7 @@ export class AppComponent implements OnInit {
    * Modal Aboutus
    * @type {BsModalRef}
   */
- public modalRefAboutUs: BsModalRef;
+  public modalRefAboutUs: BsModalRef;
 
   //Actualización en gráfico de TreeMap Dominio
   updateFlag3 = false;
@@ -46,7 +47,7 @@ export class AppComponent implements OnInit {
   //Actualización en gráfico de Column Dedication
   updateFlag5 = false;
 
-  
+
 
   // Indicator Global (MOOC/NOOC/SPOC)
   indicatorGlobal: string = '';
@@ -70,7 +71,25 @@ export class AppComponent implements OnInit {
   // Sites map
   sites;
 
-  constructor(private ds: DataService, private modalService: BsModalService,) { }
+  constructor(
+    private ds: DataService,
+    private modalService: BsModalService,
+    private formBuilder: FormBuilder
+  ) { }
+
+  /**
+   * Define data form
+  */
+  dataForm = this.formBuilder.group({
+    year: ['2020'],
+  });
+
+  years: any = ['2020', '2021', '2022']
+
+  changeYear(e) {
+    // console.log(e.target.value.split(':')[1]);
+    console.log(this.dataForm.value['year']);
+  }
 
   ngOnInit(): void {
     this.ds.getData().subscribe((data: Record[]) => {
@@ -88,16 +107,16 @@ export class AppComponent implements OnInit {
 
   }
 
-  generateRootSiteUrlList () {
-    let item : Record, key: string, value: string;
+  generateRootSiteUrlList() {
+    let item: Record, key: string, value: string;
     this.sites = new Map();
     for (item of this.data) {
-      key=item.institucion.trim();
-      value=item.site_url.trim();
+      key = item.institucion.trim();
+      value = item.site_url.trim();
       this.sites.set(key, value);
     }
   }
-  
+
   ngAfterViewInit(): void {
     let tmpThis = this;
     $(document).ready(function () {
@@ -110,7 +129,7 @@ export class AppComponent implements OnInit {
       });
     });
   }
-  
+
 
   // Graphs Functions
   updateGraphs(indicator: string, index: number) {
@@ -368,9 +387,9 @@ export class AppComponent implements OnInit {
     counts.sort(this.compareWithValueFieldAsc);
     for (item of counts) { dedications.push([item.name, item.value]); }
 
-     // update graph
-     this.chartOptionsAvgDurationMooc.subtitle.text=`${this.indicatorGlobal}`;
-     this.chartOptionsAvgDurationMooc.series[0] = {
+    // update graph
+    this.chartOptionsAvgDurationMooc.subtitle.text = `${this.indicatorGlobal}`;
+    this.chartOptionsAvgDurationMooc.series[0] = {
       type: 'column',
       data: dedications
     }
@@ -553,9 +572,9 @@ export class AppComponent implements OnInit {
 
   getCoursesListByDomainAndType(domain: string, courseType: string) {
     let item, list = [];
-     for (item of this.data) {
+    for (item of this.data) {
       if ((item.mooc_spooc === courseType && item.dominio_aprendizaje === domain)) {
-        list.push({titulo: item.titulo_mooc, url: item.url_mooc});
+        list.push({ titulo: item.titulo_mooc, url: item.url_mooc });
       }
     }
     return list;
@@ -567,7 +586,7 @@ export class AppComponent implements OnInit {
     const initialState = {
       domain: domain,
       courseType: courseType,
-      list : list
+      list: list
     };
     this.modalRef = this.modalService.show(ModalCoursesComponent,
       { class: 'modal-dialog-centered modal-lg', initialState }
@@ -635,7 +654,7 @@ export class AppComponent implements OnInit {
         style: { "whiteSpace": "normal", "position": "absolute", "top": "0" },
         formatter: function () {
           let total: number = Number(this.series['tree']['childrenTotal']);
-          return `<p>${this.point.name}</p><br><p>${((this.point.value*100)/total).toFixed(2)}%</p>`;
+          return `<p>${this.point.name}</p><br><p>${((this.point.value * 100) / total).toFixed(2)}%</p>`;
         },
         // useHTML: false,
       }],
@@ -693,7 +712,7 @@ export class AppComponent implements OnInit {
         style: { "whiteSpace": "normal", "position": "absolute", "top": "0" },
         formatter: function () {
           let total: number = Number(this.series['tree']['childrenTotal']);
-          return `<p>${this.point.name}</p><br><p>${((this.point.value*100)/total).toFixed(2)}%</p>`;
+          return `<p>${this.point.name}</p><br><p>${((this.point.value * 100) / total).toFixed(2)}%</p>`;
         },
         // useHTML: false,
       }],
@@ -744,7 +763,7 @@ export class AppComponent implements OnInit {
     credits: {
       enabled: false
     },
-    
+
     series: [{
       type: 'column',
       name: 'Duración',
@@ -772,7 +791,7 @@ export class AppComponent implements OnInit {
         // y: 25, // 10 pixels down from the top
         style: {
           fontSize: '10px',
-          textAlign : 'center',
+          textAlign: 'center',
           // fontFamily: 'Verdana, sans-serif'
         }
       }

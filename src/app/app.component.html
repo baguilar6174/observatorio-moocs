@@ -3,15 +3,15 @@
 <!-- As a heading -->
 <header class="container-fluid fixed-top">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand">Observatorio MOOC-CEDIA</a>
+        <h6 class="navbar-brand">Observatorio MOOC-CEDIA</h6>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link">Inicio</a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a class="nav-link" (click)="moveSection(demografy)">Demografía</a>
                 </li>
@@ -35,17 +35,21 @@
     </nav>
 </header>
 <!-- Seccion Selector de año -->
-<section class="container py-4 mt-5">
+<section class="container pt-5 mt-5">
     <div class="row justify-content-end">
-        <div class="col-2 text-right">
-            <div class="form-group">
-                <label for="exampleFormControlSelect1">Año de consulta</label>
-                <select class="form-control" id="exampleFormControlSelect1">
-                  <option>2020</option>
-                  <option>2021</option>
-                  <option>2021</option>
-                </select>
-            </div>
+        <div class="col-lg-6 text-right">
+            <!-- Form data -->
+            <form [formGroup]="dataForm">
+                <div class="form-group row justify-content-end">
+                    <label for="selectYear" class="col-7 col-form-label">Año de consulta</label>
+                    <div class="col-4">
+                        <select class="custom-select" id="selectYear" (change)="changeYear($event)" formControlName="year">
+                            <option *ngFor="let year of years" [ngValue]="year">{{year}}</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <!-- Form ends -->
         </div>
     </div>
 </section>
@@ -157,7 +161,8 @@
     <div class="modal-body text-justify">
         <div class="row px-3">
             <div class="col-12">
-                <p class="">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quia praesentium saepe aperiam quis fugiat cum maxime ad quasi ducimus! Reprehenderit magnam laudantium perferendis animi ipsam!</p>
+                <p class="">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quia praesentium saepe aperiam quis fugiat cum maxime ad quasi ducimus! Reprehenderit magnam laudantium perferendis animi ipsam!
+                </p>
             </div>
         </div>
     </div>
