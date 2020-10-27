@@ -11,11 +11,8 @@ import { environment } from '../../environments/environment.prod';
 export class DataService {
 
   public data: Record[] = [];
-  private subscription: Subscription;
 
-  constructor(private googleSheetsDbService: GoogleSheetsDbService) {
-    // this.getData();
-   }
+  constructor(private googleSheetsDbService: GoogleSheetsDbService) { }
 
   getData() {
     return this.googleSheetsDbService.get<Record>(

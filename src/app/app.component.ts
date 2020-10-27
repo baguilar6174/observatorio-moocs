@@ -5,6 +5,8 @@ import { DataService } from './services/data.service';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 declare var require: any
+declare let $: any;
+
 const worldMap = require('@highcharts/map-collection/countries/ec/ec-all.geo.json');
 
 import More from 'highcharts/highcharts-more';
@@ -21,7 +23,6 @@ HighchartsMap(Highcharts);
 import { Chart } from 'angular-highcharts';
 import { FormBuilder } from '@angular/forms';
 
-declare let $: any;
 
 const noData = require('highcharts/modules/no-data-to-display')
 noData(Highcharts)
@@ -40,10 +41,7 @@ export class AppComponent implements OnInit {
   // Modal Treemap
   modalRef: BsModalRef;
 
-  /**
-   * Modal Aboutus
-   * @type {BsModalRef}
-  */
+  // Modal Aboutus
   public modalRefAboutUs: BsModalRef;
 
   //Actualización en gráfico de TreeMap Dominio
@@ -95,16 +93,6 @@ export class AppComponent implements OnInit {
       this.allData=resp;
       this.loadYears(resp);
       this.loadData(resp);
-      // let indicator: string = 'MOOC';
-      // this.indicatorGlobal = indicator;
-      // this.generateRootSiteUrlList();
-      // this.generateCards();
-      // this.generateMap(indicator);
-      // this.generateCoursesCountGraph(indicator);
-      // this.generateDomainCoursesCountGraph(indicator);
-      // this.generateDurationCoursesCountGraph(indicator);
-      // this.generateDedicationCoursesCountGraph(indicator);
-      // this.generatePlatformCountGraph();
     });
   }
 
@@ -113,8 +101,6 @@ export class AppComponent implements OnInit {
     $(document).ready(function () {
       $(document).on('click', '.tooltip-platform', function (e) {
         e.preventDefault();
-        // console.log(e);
-        // console.log(e.originalEvent.target.innerText);
         let url = tmpThis.sites.get(e.originalEvent.target.innerText);
         window.open(url, "_blank");
       });
@@ -134,21 +120,8 @@ export class AppComponent implements OnInit {
       arr.push(property.toString());
     }
     this.years = arr;
-    // console.log(this.years);
-    // arr = [];
     let yearLabel=(this.years && this.years.length) ? this.years[0] : ''; 
     this.dataForm.setValue({ year: yearLabel });
-    
-    // if (this.years && this.years.length) {
-    //   for (item of data) {
-    //     if (item.anio.trim()===yearLabel) {
-    //       arr.push(item);
-    //     }
-    //   }
-    //   this.data = arr;
-    // } else {
-    //   this.data = [];
-    // }
   }
 
   loadData(data: Record[]) {
@@ -164,27 +137,28 @@ export class AppComponent implements OnInit {
     } else {
       this.data = [];
     }
-    let indicator: string = 'MOOC';
-    this.indicatorGlobal = indicator;
+    
+    // generar datos que no cambian con la 
+    // actualizacion de las cards
     this.generateRootSiteUrlList();
     this.generateCards();
-    this.generateMap(indicator);
-    this.generateCoursesCountGraph(indicator);
-    this.generateDomainCoursesCountGraph(indicator);
-    this.generateDurationCoursesCountGraph(indicator);
-    this.generateDedicationCoursesCountGraph(indicator);
+    
+    // actualizar las graficas que si
+    // cambian con las cards
+    this.generateMap();
+    this.generateCoursesCountGraph();
+    this.generateDomainCoursesCountGraph();
+    this.generateDurationCoursesCountGraph();
+    this.generateDedicationCoursesCountGraph();
     this.generatePlatformCountGraph();
   }
 
   changeYear(e) {
-    console.log(this.dataForm.value['year']);
     this.loadData(this.allData);
   } 
 
   updateGraphs(indicator: string, index: number) {
-
     this.indicatorGlobal = indicator;
-
     //Control de card activada y desactivada
     for (var _i = 0; _i < this.cards.length; _i++) {
       if (index === _i) {
@@ -194,11 +168,12 @@ export class AppComponent implements OnInit {
       }
     }
 
-    this.generateMap(indicator);
-    this.generateCoursesCountGraph(indicator);
-    this.generateDomainCoursesCountGraph(indicator);
-    this.generateDurationCoursesCountGraph(indicator);
-    this.generateDedicationCoursesCountGraph(indicator);
+    // update graphs
+    this.generateMap();
+    this.generateCoursesCountGraph();
+    this.generateDomainCoursesCountGraph();
+    this.generateDurationCoursesCountGraph();
+    this.generateDedicationCoursesCountGraph();
   }
 
   loadEcuadorianProvinces() {
@@ -243,13 +218,13 @@ export class AppComponent implements OnInit {
 
 
   // Graphs Functions
-  generateMap(indicator: string) {
+  generateMap() {
 
     this.loadEcuadorianProvinces();
 
     let item, key, provincesMap = new Map;
     for (item of this.data) {
-      if (item.mooc_spooc === indicator) {
+      if (item.mooc_spooc === this.indicatorGlobal) {
         key = item.provincia_codigo.trim();
         if (provincesMap.has(key)) {
           provincesMap.get(key).push(item);
@@ -278,22 +253,19 @@ export class AppComponent implements OnInit {
   generateCards() {
     this.cards = [];
     let item, arr = [];
-    let cont: number = 0;
     for (item of this.data) {
       arr.push(item.mooc_spooc);
     }
     let counts = this.getCount(arr);
     for (const property in counts) {
-      cont++;
-      if (cont == 1) {
-        this.cards.push({ type: property, value: counts[property], select: true });
-      } else {
-        this.cards.push({ type: property, value: counts[property], select: false });
-      }
+      this.cards.push({ type: property, value: counts[property], select: false });     
     }
+    this.cards.sort(this.compareWithValueFieldDesc);
+    this.cards[0].select=true;
+    this.indicatorGlobal = this.cards[0].type || '';
   }
 
-  generateCoursesCountGraph(indicator: string) {
+  generateCoursesCountGraph() {
 
     // generate data 
     let item, key, arrInst = [], arrTypeInst = [];
@@ -303,7 +275,7 @@ export class AppComponent implements OnInit {
 
     // get universities map
     for (item of this.data) {
-      if ((item.mooc_spooc === indicator)) {
+      if ((item.mooc_spooc === this.indicatorGlobal)) {
         key = item.institucion.trim();
         if (universitiesMap.has(key)) {
           universitiesMap.get(key).push(item);
@@ -434,12 +406,12 @@ export class AppComponent implements OnInit {
 
   }
 
-  generateDomainCoursesCountGraph(indicator: string) {
+  generateDomainCoursesCountGraph() {
     // generate data
     let domains = [];
     let item, arr = [];
     for (item of this.data) {
-      (item.mooc_spooc === indicator) && arr.push(item.dominio_aprendizaje);
+      (item.mooc_spooc === this.indicatorGlobal) && arr.push(item.dominio_aprendizaje);
     }
     let counts = this.getCount(arr);
     for (const property in counts) {
@@ -458,12 +430,12 @@ export class AppComponent implements OnInit {
     this.updateFlag3 = true;
   }
 
-  generateDurationCoursesCountGraph(indicator: string) {
+  generateDurationCoursesCountGraph() {
     // generate data
     let durations = [];
     let item, label, a, b, arr = [];
     for (item of this.data) {
-      if (item.mooc_spooc === indicator) {
+      if (item.mooc_spooc === this.indicatorGlobal) {
         a = item.duracion_semanas.split('/');
         if (a[0].includes("semana")) {
           b = a[0].split(' ');
@@ -490,12 +462,12 @@ export class AppComponent implements OnInit {
     this.updateFlag4 = true;
   }
 
-  generateDedicationCoursesCountGraph(indicator: string) {
+  generateDedicationCoursesCountGraph() {
     // generate data 
     let dedications = [];
     let item, label, a, b, arr = [];
     for (item of this.data) {
-      if (item.mooc_spooc === indicator) {
+      if (item.mooc_spooc === this.indicatorGlobal) {
         a = item.dedicacion_horas_semanas.split('/');
         if (a[0].includes("hora")) {
           b = a[0].split(' ');
@@ -819,8 +791,6 @@ export class AppComponent implements OnInit {
       events: {
         click: (event) => {
           let cardSelected = this.cards.find(element => element.select);
-          // console.log(event.point.name);
-          // console.log(cardSelected.type);
           this.openModal(event.point.name, cardSelected.type);
         },
       }
