@@ -23,6 +23,9 @@ import { FormBuilder } from '@angular/forms';
 
 declare let $: any;
 
+const noData = require('highcharts/modules/no-data-to-display')
+noData(Highcharts)
+
 
 @Component({
   selector: 'app-root',
@@ -55,10 +58,10 @@ export class AppComponent implements OnInit {
 
   // Indicator Global (MOOC/NOOC/SPOC)
   indicatorGlobal: string = '';
-  
+
   // mapa con provincias del ecuador
   ecuadorProvincesMap: Map<any, any>;
-  
+
   // Stacked Bar (registros mooc/cpoc/nooc por unversidad)
   coursesStackedBarChart = new Chart();
 
@@ -178,7 +181,7 @@ export class AppComponent implements OnInit {
     this.ecuadorProvincesMap.set('ec-tu', 0);
     this.ecuadorProvincesMap.set('ec-ga', 0);
   }
-  
+
   generateRootSiteUrlList() {
     let item: Record, key: string, value: string;
     this.sites = new Map();
@@ -215,14 +218,14 @@ export class AppComponent implements OnInit {
 
     let count = [];
     for (let [key, value] of this.ecuadorProvincesMap) {
-      count.push([ key, value ]);
+      count.push([key, value]);
     }
 
     this.chartOptionsMap.title.text = `Cursos ${this.indicatorGlobal} por provincia`;
     this.chartOptionsMap.series[0].data = count;
-    this.updateFlag6=true;
+    this.updateFlag6 = true;
   }
-  
+
   generateCards() {
     let item, arr = [];
     let cont: number = 0;
@@ -323,7 +326,10 @@ export class AppComponent implements OnInit {
 
     let chart = new Chart({
       chart: {
-        type: "bar"
+        type: "bar",
+        style: {
+          fontFamily: 'Poppins'
+        }
       },
       title: {
         text: `Número de Registros ${this.indicatorGlobal} por Universidad`
@@ -344,6 +350,16 @@ export class AppComponent implements OnInit {
       },
       credits: {
         enabled: false
+      },
+      lang: {
+        noData: 'No hay datos que mostrar'
+      },
+      noData: {
+        style: {
+          fontWeight: 'bold',
+          fontSize: '15px',
+          color: '#303030'
+        }
       },
       tooltip: {
         backgroundColor: '#fff',
@@ -457,8 +473,8 @@ export class AppComponent implements OnInit {
     }
     counts.push({ name: item.institution, value: (sum / cont) });
     counts.sort(this.compareWithValueFieldAsc);
-    for (item of counts) { 
-      (item.value) && dedications.push([item.name, item.value]); 
+    for (item of counts) {
+      (item.value) && dedications.push([item.name, item.value]);
     }
 
     // update graph
@@ -548,7 +564,10 @@ export class AppComponent implements OnInit {
 
     let chart = new Chart({
       chart: {
-        type: "bar"
+        type: "bar",
+        style: {
+          fontFamily: 'Poppins'
+        }
       },
       title: {
         text: `Plataformas utilizadas por Institución`
@@ -569,6 +588,16 @@ export class AppComponent implements OnInit {
       },
       credits: {
         enabled: false
+      },
+      lang: {
+        noData: 'No hay datos que mostrar'
+      },
+      noData: {
+        style: {
+          fontWeight: 'bold',
+          fontSize: '15px',
+          color: '#303030'
+        }
       },
       tooltip: {
         backgroundColor: '#fff',
@@ -713,6 +742,16 @@ export class AppComponent implements OnInit {
     credits: {
       enabled: false
     },
+    lang: {
+      noData: 'No hay datos que mostrar'
+    },
+    noData: {
+      style: {
+        fontWeight: 'bold',
+        fontSize: '15px',
+        color: '#303030'
+      }
+    },
     series: [{
       dataLabels: [{
         enabled: true,
@@ -756,6 +795,16 @@ export class AppComponent implements OnInit {
     credits: {
       enabled: false
     },
+    lang: {
+      noData: 'No hay datos que mostrar'
+    },
+    noData: {
+      style: {
+        fontWeight: 'bold',
+        fontSize: '15px',
+        color: '#303030'
+      }
+    },
     tooltip: {
       backgroundColor: '#fff',
       borderRadius: 0.0,
@@ -793,7 +842,10 @@ export class AppComponent implements OnInit {
   chartOptionsAvgDurationMooc: Highcharts.Options = {
 
     chart: {
-      type: 'column'
+      type: 'column',
+      style: {
+        fontFamily: 'Poppins'
+      }
     },
     colorAxis: {
       minColor: '#4179AB',
@@ -845,21 +897,24 @@ export class AppComponent implements OnInit {
       }
     }],
     lang: {
-      noData: "No hay Datos"
+      noData: 'No hay datos que mostrar'
     },
     noData: {
       style: {
-          fontWeight: 'bold',
-          fontSize: '15px',
-          color: '#303030'
+        fontWeight: 'bold',
+        fontSize: '15px',
+        color: '#303030'
       }
-  }
+    },
   };
 
   // Mapa de provincias
   chartOptionsMap = {
     chart: {
       map: worldMap,
+      style: {
+        fontFamily: 'Poppins'
+      },
     },
     title: {
       text: 'Cursos por provincia'
@@ -875,6 +930,16 @@ export class AppComponent implements OnInit {
     },
     credits: {
       enabled: false
+    },
+    lang: {
+      noData: 'No hay datos que mostrar'
+    },
+    noData: {
+      style: {
+        fontWeight: 'bold',
+        fontSize: '15px',
+        color: '#303030'
+      }
     },
     series: [{
       name: 'Cursos',
