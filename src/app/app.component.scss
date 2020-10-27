@@ -16,3 +16,11 @@
 .nav-link {
     cursor: pointer;
 }
+
+// Medium devices (tablets, 768px and up)
+@media (max-width: 768px) {
+    .navbar-brand {
+        margin-top: 10px;
+        font-size: smaller;
+    }
+}
