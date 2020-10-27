@@ -9,7 +9,6 @@ import { GoogleSheetsDbService } from 'ng-google-sheets-db';
 import { ChartModule } from 'angular-highcharts';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { ModalCoursesComponent } from './view/modal-courses/modal-courses.component';
-import { ChartMapComponent } from './view/chart-map/chart-map.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
 
@@ -18,7 +17,6 @@ import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
   declarations: [
     AppComponent,
     ModalCoursesComponent,
-    ChartMapComponent
   ],
   imports: [
     BrowserAnimationsModule,

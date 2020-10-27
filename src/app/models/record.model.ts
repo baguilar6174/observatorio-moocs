@@ -12,6 +12,9 @@ export const attributesMapping = {
   mooc_spooc: 'mooc_spooc',
   url_mooc: 'url_mooc',
   site_url: 'site_url',
+  provincia: 'provincia',
+  provincia_codigo: 'provincia_codigo',
+  anio: 'anio',
 };
 
 export interface Record {
@@ -28,4 +31,26 @@ export interface Record {
   mooc_spooc: string,
   url_mooc: string,
   site_url: string,
+  provincia: string,
+  provincia_codigo: string,
+  anio: string,
+}
+
+export interface Record {
+  institucion: string;
+  abreviacion: string,
+  tiene_mooc: string,
+  plataforma: string,
+  dominio_aprendizaje: string,
+  tipo_institucion: string,
+  titulo_mooc: string,
+  dedicacion_horas_semanas: string,
+  duracion_semanas: string,
+  idioma: string,
+  mooc_spooc: string,
+  url_mooc: string,
+  site_url: string,
+  provincia: string,
+  provincia_codigo: string,
+  anio: string,
 }

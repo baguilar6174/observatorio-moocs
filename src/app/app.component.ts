@@ -4,6 +4,9 @@ import { Record } from './models/record.model';
 import { DataService } from './services/data.service';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
+declare var require: any
+const worldMap = require('@highcharts/map-collection/countries/ec/ec-all.geo.json');
+
 import More from 'highcharts/highcharts-more';
 More(Highcharts);
 import Tree from 'highcharts/modules/treemap';
@@ -46,12 +49,16 @@ export class AppComponent implements OnInit {
   updateFlag4 = false;
   //Actualización en gráfico de Column Dedication
   updateFlag5 = false;
-
+  // Actualizacion en gráfico mapa
+  updateFlag6 = false;
 
 
   // Indicator Global (MOOC/NOOC/SPOC)
   indicatorGlobal: string = '';
-
+  
+  // mapa con provincias del ecuador
+  ecuadorProvincesMap: Map<any, any>;
+  
   // Stacked Bar (registros mooc/cpoc/nooc por unversidad)
   coursesStackedBarChart = new Chart();
 
@@ -71,6 +78,8 @@ export class AppComponent implements OnInit {
   // Sites map
   sites;
 
+
+
   constructor(
     private ds: DataService,
     private modalService: BsModalService,
@@ -84,7 +93,7 @@ export class AppComponent implements OnInit {
     year: ['2020'],
   });
 
-  years: any = ['2020', '2021', '2022']
+  years: any = ['2020']
 
   changeYear(e) {
     // console.log(e.target.value.split(':')[1]);
@@ -98,23 +107,13 @@ export class AppComponent implements OnInit {
       this.indicatorGlobal = indicator;
       this.generateRootSiteUrlList();
       this.generateCards();
+      this.generateMap(indicator);
       this.generateCoursesCountGraph(indicator);
       this.generateDomainCoursesCountGraph(indicator);
       this.generateDurationCoursesCountGraph(indicator);
       this.generateDedicationCoursesCountGraph(indicator);
       this.generatePlatformCountGraph();
     });
-
-  }
-
-  generateRootSiteUrlList() {
-    let item: Record, key: string, value: string;
-    this.sites = new Map();
-    for (item of this.data) {
-      key = item.institucion.trim();
-      value = item.site_url.trim();
-      this.sites.set(key, value);
-    }
   }
 
   ngAfterViewInit(): void {
@@ -131,7 +130,7 @@ export class AppComponent implements OnInit {
   }
 
 
-  // Graphs Functions
+  // functions
   updateGraphs(indicator: string, index: number) {
 
     this.indicatorGlobal = indicator;
@@ -145,12 +144,85 @@ export class AppComponent implements OnInit {
       }
     }
 
+    this.generateMap(indicator);
     this.generateCoursesCountGraph(indicator);
     this.generateDomainCoursesCountGraph(indicator);
     this.generateDurationCoursesCountGraph(indicator);
     this.generateDedicationCoursesCountGraph(indicator);
   }
 
+  loadEcuadorianProvinces() {
+    this.ecuadorProvincesMap = new Map();
+    this.ecuadorProvincesMap.set('ec-gu', 0);
+    this.ecuadorProvincesMap.set('ec-es', 0);
+    this.ecuadorProvincesMap.set('ec-cr', 0);
+    this.ecuadorProvincesMap.set('ec-im', 0);
+    this.ecuadorProvincesMap.set('ec-su', 0);
+    this.ecuadorProvincesMap.set('ec-se', 0);
+    this.ecuadorProvincesMap.set('ec-sd', 0);
+    this.ecuadorProvincesMap.set('ec-az', 0);
+    this.ecuadorProvincesMap.set('ec-eo', 0);
+    this.ecuadorProvincesMap.set('ec-lj', 0);
+    this.ecuadorProvincesMap.set('ec-zc', 0);
+    this.ecuadorProvincesMap.set('ec-cn', 0);
+    this.ecuadorProvincesMap.set('ec-bo', 0);
+    this.ecuadorProvincesMap.set('ec-ct', 0);
+    this.ecuadorProvincesMap.set('ec-lr', 0);
+    this.ecuadorProvincesMap.set('ec-mn', 0);
+    this.ecuadorProvincesMap.set('ec-cb', 0);
+    this.ecuadorProvincesMap.set('ec-ms', 0);
+    this.ecuadorProvincesMap.set('ec-pi', 0);
+    this.ecuadorProvincesMap.set('ec-pa', 0);
+    this.ecuadorProvincesMap.set('ec-1076', 0);
+    this.ecuadorProvincesMap.set('ec-na', 0);
+    this.ecuadorProvincesMap.set('ec-tu', 0);
+    this.ecuadorProvincesMap.set('ec-ga', 0);
+  }
+  
+  generateRootSiteUrlList() {
+    let item: Record, key: string, value: string;
+    this.sites = new Map();
+    for (item of this.data) {
+      key = item.institucion.trim();
+      value = item.site_url.trim();
+      this.sites.set(key, value);
+    }
+  }
+
+
+  // Graphs Functions
+  generateMap(indicator: string) {
+
+    this.loadEcuadorianProvinces();
+
+    let item, key, provincesMap = new Map;
+    for (item of this.data) {
+      if (item.mooc_spooc === indicator) {
+        key = item.provincia_codigo.trim();
+        if (provincesMap.has(key)) {
+          provincesMap.get(key).push(item);
+        } else {
+          provincesMap.set(key, [item]);
+        }
+      }
+    }
+
+    for (let [key, value] of provincesMap) {
+      if (this.ecuadorProvincesMap.has(key)) {
+        this.ecuadorProvincesMap.set(key, value.length);
+      }
+    }
+
+    let count = [];
+    for (let [key, value] of this.ecuadorProvincesMap) {
+      count.push([ key, value ]);
+    }
+
+    this.chartOptionsMap.title.text = `Cursos ${this.indicatorGlobal} por provincia`;
+    this.chartOptionsMap.series[0].data = count;
+    this.updateFlag6=true;
+  }
+  
   generateCards() {
     let item, arr = [];
     let cont: number = 0;
@@ -385,7 +457,9 @@ export class AppComponent implements OnInit {
     }
     counts.push({ name: item.institution, value: (sum / cont) });
     counts.sort(this.compareWithValueFieldAsc);
-    for (item of counts) { dedications.push([item.name, item.value]); }
+    for (item of counts) { 
+      (item.value) && dedications.push([item.name, item.value]); 
+    }
 
     // update graph
     this.chartOptionsAvgDurationMooc.subtitle.text = `${this.indicatorGlobal}`;
@@ -599,23 +673,16 @@ export class AppComponent implements OnInit {
     });
   }
 
-  /**
-   * Allows to open and close the modal terms and conditions
-   * @param {TemplateRef<any>} template - Identifier of the modal HTML tag
-  */
   openModal_aboutus(template: TemplateRef<any>) {
     this.modalRefAboutUs = this.modalService.show(template);
     this.modalRefAboutUs.setClass('modal-dialog-centered');
   }
 
-  /**
-  * Move between sections of the page
-  * @param {HTMLElement} element - HTML identifier
-  * @return {void} Nothing
- */
   moveSection(element: HTMLElement) {
     element.scrollIntoView({ behavior: 'smooth' });
   }
+
+
 
   // Tree Map Domain
   chartOptions3: Highcharts.Options = {
@@ -711,10 +778,9 @@ export class AppComponent implements OnInit {
         align: 'left',
         style: { "whiteSpace": "normal", "position": "absolute", "top": "0" },
         formatter: function () {
-          let total: number = Number(this.series['tree']['childrenTotal']);
+          let total: number = Number(this.series['tree']['childrenTotal']) || 0;
           return `<p>${this.point.name}</p><br><p>${((this.point.value * 100) / total).toFixed(2)}%</p>`;
         },
-        // useHTML: false,
       }],
       data: []
     }],
@@ -744,7 +810,6 @@ export class AppComponent implements OnInit {
       labels: {
         style: {
           fontSize: '10px',
-          // fontFamily: 'Verdana, sans-serif'
         }
       },
     },
@@ -763,38 +828,67 @@ export class AppComponent implements OnInit {
     credits: {
       enabled: false
     },
-
     series: [{
       type: 'column',
       name: 'Duración',
-      data: [
-        ['Shanghai sadh ash asd dsah', 4.2],
-        ['Beijing', 5.8],
-        ['Karachi', 7.9],
-        ['Shenzhen', 9.7],
-        ['Guangzhou', 10.1],
-        ['Istanbul', 11.7],
-        ['Mumbai', 14.4],
-        ['Moscow', 20.2],
-        ['São Paulo', 24.0],
-      ],
+      data: [],
       dataLabels: {
         verticalAlign: "top",
-        // style: { "whiteSpace": "normal", "position": "absolute", "top": "0" },
         format: '<p>{point.y:.1f}</p><br><p>horas</p>',
         useHTML: false,
         enabled: true,
-        // rotation: -90,
         color: '#FFFFFF',
-        // align: 'center',
-        // format: '{point.y:.1f}\nhoras', // one decimal
-        // y: 25, // 10 pixels down from the top
         style: {
           fontSize: '10px',
           textAlign: 'center',
-          // fontFamily: 'Verdana, sans-serif'
         }
       }
+    }],
+    lang: {
+      noData: "No hay Datos"
+    },
+    noData: {
+      style: {
+          fontWeight: 'bold',
+          fontSize: '15px',
+          color: '#303030'
+      }
+  }
+  };
+
+  // Mapa de provincias
+  chartOptionsMap = {
+    chart: {
+      map: worldMap,
+    },
+    title: {
+      text: 'Cursos por provincia'
+    },
+    mapNavigation: {
+      enabled: true,
+      buttonOptions: {
+        alignTo: 'spacingBox'
+      }
+    },
+    colorAxis: {
+      min: 0
+    },
+    credits: {
+      enabled: false
+    },
+    series: [{
+      name: 'Cursos',
+      states: {
+        hover: {
+          color: '#BADA55'
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        format: '{point.name}'
+      },
+      allAreas: false,
+      data: []
     }]
   };
 }
