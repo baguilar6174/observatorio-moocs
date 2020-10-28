@@ -362,7 +362,7 @@ export class AppComponent implements OnInit {
       yAxis: {
         min: 0,
         title: {
-          text: `Recuento de ${this.indicatorGlobal}`
+          text: `Número de ${this.indicatorGlobal}s`
         }
       },
       plotOptions: {
