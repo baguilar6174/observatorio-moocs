@@ -2,7 +2,7 @@
 </router-outlet>
 <!-- As a heading -->
 <header class="container-fluid fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <h6 class="navbar-brand">Observatorio MOOC-CEDIA</h6>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -12,30 +12,43 @@
                 <!-- <li class="nav-item">
                     <a class="nav-link">Inicio</a>
                 </li> -->
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" (click)="moveSection(demografy)">Demografía</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" (click)="moveSection(ranking)">Ranking</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" (click)="moveSection(characteristics)">Características</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" (click)="moveSection(platforms)">Plataformas</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" (click)="openModal_aboutus(aboutus)">Acerca de</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" (click)="moveSection(contact)">Contacto</a>
                 </li>
             </ul>
         </div>
     </nav>
 </header>
-<!-- Seccion Selector de año -->
 <section class="container pt-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-logo">
+            <img src="/assets/images/logo.png" width="100%" alt="CEDIA">
+        </div>
+    </div>
+    <div class="row justify-content-center pt-4">
+        <div class="col-6 text-center">
+            <h5><b>Observatorio MOOC</b></h5>
+        </div>
+    </div>
+</section>
+
+<!-- Seccion Selector de año -->
+<section class="container pt-5">
     <div class="row justify-content-end">
         <div class="col-lg-6 text-right">
             <!-- Form data -->
@@ -141,12 +154,19 @@
             <h5>Contacto</h5>
         </div>
     </div>
+    <div class="row">
+        <div class="col-12">
+            <p>Gonzalo Cordero 2-122 y José Fajardo. CP: 010203. Cuenca – Ecuador info@cedia.org.ec</p>
+        </div>
+    </div>
 </section>
 <!-- Pie de página -->
 <footer class="container-fluid">
     <div class="row py-3">
-        <div class="col-md-12 text-center">
-            <h6>© 2020 Todos los derechos reservados.</h6>
+        <div class="col text-center">
+            <p class="footer-text">
+                Sitio desarrollado por Edu-Analytics (<a href="https://edu-analytics.ec/" target="_blank">www.edu-analytics.ec</a>)
+            </p>
         </div>
     </div>
 </footer>
@@ -154,7 +174,7 @@
 
 <ng-template #aboutus>
     <div class="modal-header">
-        <h6 class="modal-title tittle-5 ml-3 mt-2">Acerca de</h6>
+        <h6 class="modal-title tittle-5 ml-3 mt-2">OBSERVATORIO MOOC – CEDIA</h6>
         <button type="button" class="close pull-right" aria-label="Close" (click)="modalRefAboutUs.hide()">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -162,8 +182,13 @@
     <div class="modal-body text-justify">
         <div class="row px-3">
             <div class="col-12">
-                <p class="">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quia praesentium saepe aperiam quis fugiat cum maxime ad quasi ducimus! Reprehenderit magnam laudantium perferendis animi ipsam!
-                </p>
+                <p class="">El objetivo de este sitio es difundir el trabajo realizado en el estudio “Estado del arte de la adopción de MOOCs en Ecuador y reporte de oferta de cursos.”</p>
+
+                <p>El informe es fruto del trabajo conjunto realizado por el equipo de CEDIA y la Consultora Edu-Analytics, en el que se realizó un levantamiento de los datos de cursos MOOCs existentes en Ecuador. Puedes acceder a la información recopilada
+                    de los datos de MOOCS para Ecuador en 2020.</p>
+
+
+                <p>Finalmente, al explorar este sitio encontrarás la demografía de los cursos, un ranking de las mayores instituciones prodctoras de MOOCs, las características de los cursos, las diferentes tipos de y una visión general del estado actual.</p>
             </div>
         </div>
     </div>

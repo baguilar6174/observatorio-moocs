@@ -1,13 +1,13 @@
 .indicator {
     background-color: #fff;
-    color: #666;
+    color: #343a40;
     box-shadow: 0 3px 4px 0 rgba(163, 163, 163, 0.5);
     border-radius: 4px;
     cursor: pointer;
 }
 
 .select {
-    background-color: #666;
+    background-color: #343a40;
     color: #fff;
     box-shadow: 0 3px 4px 0 rgba(163, 163, 163, 0.5);
     border-radius: 4px;
@@ -23,4 +23,12 @@
         margin-top: 10px;
         font-size: smaller;
     }
+}
+
+.col-logo {
+    width: 10%;
+}
+
+.footer-text {
+    font-size: 14px;
 }
