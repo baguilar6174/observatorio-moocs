@@ -18,6 +18,9 @@
 }
 
 // Medium devices (tablets, 768px and up)
+@media (max-width: 576px) {}
+
+// Medium devices (tablets, 768px and up)
 @media (max-width: 768px) {
     .navbar-brand {
         margin-top: 10px;
@@ -35,3 +38,15 @@
 .footer-text {
     font-size: 15px;
 }
+
+.tooltip-inner {
+    // background-color: #009688;
+    max-width: 350px;
+    text-align: justify;
+    // color: #fff;
+}
+
+//  :host>>>.tooltip.top .tooltip-arrow:before,
+//  :host>>>.tooltip.top .tooltip-arrow {
+//     border-top-color: #009688;
+// }

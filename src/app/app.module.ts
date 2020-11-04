@@ -9,6 +9,7 @@ import { GoogleSheetsDbService } from 'ng-google-sheets-db';
 import { ChartModule } from 'angular-highcharts';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { ModalCoursesComponent } from './view/modal-courses/modal-courses.component';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
 
@@ -26,6 +27,7 @@ import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
     HttpClientModule,
     ChartModule,
     ModalModule.forRoot(),
+    TooltipModule.forRoot(),
     NgxDatatableModule,
     FormsModule,
     ReactiveFormsModule,

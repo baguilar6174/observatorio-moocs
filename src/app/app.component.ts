@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { Record } from './models/record.model';
 import { DataService } from './services/data.service';
@@ -31,7 +31,8 @@ noData(Highcharts)
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit {
 
@@ -257,8 +258,14 @@ export class AppComponent implements OnInit {
       arr.push(item.mooc_spooc);
     }
     let counts = this.getCount(arr);
+    console.log(counts);
+    let definitions = {
+      MOOC:'Los MOOCs son cursos diseñados para un número masivo de estudiantes, accesibles por cualquier persona desde cualquier lugar siempre y cuando tenga conexión a internet, sin restricciones de acceso por nota, y que se ofrecen únicamente online por medio de una plataforma para MOOC, de manera periódica o de forma contínua',
+      SPOC:'Cursos que utilizan la misma metodología y plataformas que los MOOCs pero de forma privada con control de acceso. Se utilizan de manera general como complemento a la enseñanza presencial mediante lo que se conoce como ‘blended learning’. Al ser un entorno controlado, se pueden añadir funcionalidades especiales que no tienen sentido en un curso abierto y masivo',
+      NOOC:'Nano-MOOC o también Objetos de Aprendizaje, es una unidad didáctica digital independiente, cuya estructura está formada por un objetivo de aprendizaje específico, un contenido, un conjunto de actividades y una autoevaluación, planteando así una experiencia de aprendizaje reducida en el tiempo.'
+    };
     for (const property in counts) {
-      this.cards.push({ type: property, value: counts[property], select: false });     
+      this.cards.push({ type: property, value: counts[property], select: false, definition: definitions[property]}); 
     }
     this.cards.sort(this.compareWithValueFieldDesc);
     this.cards[0].select=true;
