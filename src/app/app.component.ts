@@ -258,7 +258,7 @@ export class AppComponent implements OnInit {
       arr.push(item.mooc_spooc);
     }
     let counts = this.getCount(arr);
-    console.log(counts);
+    // console.log(counts);
     let definitions = {
       MOOC:'Los MOOCs son cursos diseñados para un número masivo de estudiantes, accesibles por cualquier persona desde cualquier lugar siempre y cuando tenga conexión a internet, sin restricciones de acceso por nota, y que se ofrecen únicamente online por medio de una plataforma para MOOC, de manera periódica o de forma contínua',
       SPOC:'Cursos que utilizan la misma metodología y plataformas que los MOOCs pero de forma privada con control de acceso. Se utilizan de manera general como complemento a la enseñanza presencial mediante lo que se conoce como ‘blended learning’. Al ser un entorno controlado, se pueden añadir funcionalidades especiales que no tienen sentido en un curso abierto y masivo',
