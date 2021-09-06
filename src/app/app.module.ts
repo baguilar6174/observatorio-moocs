@@ -5,13 +5,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { HttpClientModule } from '@angular/common/http';
-import { GoogleSheetsDbService } from 'ng-google-sheets-db';
+import { API_KEY, GoogleSheetsDbService } from 'ng-google-sheets-db';
 import { ChartModule } from 'angular-highcharts';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { ModalCoursesComponent } from './view/modal-courses/modal-courses.component';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
+import { environment } from 'src/environments/environment';
 
 
 @NgModule({
@@ -32,7 +33,13 @@ import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
     FormsModule,
     ReactiveFormsModule,
   ],
-  providers: [GoogleSheetsDbService],
+  providers: [
+    {
+      provide: API_KEY,
+      useValue: environment.googleSheetsApiKey,
+    },
+    GoogleSheetsDbService
+  ],
   entryComponents: [ModalCoursesComponent],
   bootstrap: [AppComponent]
 })

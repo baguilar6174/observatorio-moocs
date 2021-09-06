@@ -4,9 +4,10 @@
 
 export const environment = {
   production: false,
+  googleSheetsApiKey: 'AIzaSyA-zvGnfBhsu48lRZqplCiMJyAHqnutMLU',
   document: {
-    spreadsheetId: '1hfC-QTTyZvroe1vJvEkzQHJDFsOVC4H_x-qyx-Evm-M',
-    worksheetId: 1,
+    spreadsheetId: '18soz9NSRTZ9KIAhR6Z7ozG3Q_CyeB-85NoaoIB6qavA',
+    worksheetName: 'mooc',
   },
 };
 

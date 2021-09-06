@@ -16,9 +16,9 @@ export class DataService {
 
   getData() {
     return this.googleSheetsDbService.get<Record>(
-      environment.document.spreadsheetId, 
-      environment.document.worksheetId, 
+      environment.document.spreadsheetId,
+      environment.document.worksheetName,
       attributesMapping
-      );
+    );
   }
 }
